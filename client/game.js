@@ -31,12 +31,6 @@ var collidables
 var NUMBER_OF_LANES = 6
 var lanes = []
 var collidableSprites = {
-    "box": {
-        spriteName: 'box',
-        spriteSheet: null,
-        scale: 0.6,
-        rotation: true
-    },
     "motorbike-blue": {
         spriteName: 'motorcycle_blue.png',
         spriteSheet: 'vehicles',
@@ -138,7 +132,7 @@ function makeCollidable(lane) {
     collidable.anchor.x = 0.5
     collidable.anchor.y = 0.5
     collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
-    collidable.body.velocity.y = 200
+    collidable.body.velocity.y = Math.random() * (400) + 300;
     collidable.body.immovable = true
     collidable.checkWorldBounds = true
     collidable.rotation = randomCollidable.rotation ? Math.random(0, 360) : 0
@@ -159,7 +153,7 @@ function fadeExplosion() {
 }
 function update() {
     lanes.forEach(function (lane) {
-        lane.laneSprite.y += 4
+        lane.laneSprite.y += 8 //speed of road
         if (lane.laneSprite.y >= 0) lane.laneSprite.y = -151 // Yes, I hate myself.
     })
 
