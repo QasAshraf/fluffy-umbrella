@@ -167,7 +167,7 @@ function update() {
   game.physics.arcade.collide(player, collidables, function (player, collidables) {
       explosion.play();
       explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
-      game.time.events.add(Phaser.Timer.SECOND * 3, fadeExplosion, explosion);
+      game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
       player.kill()
       player = null
   })
