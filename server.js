@@ -4,6 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 app.use(express.static('bower_components/phaser/build'));
+app.use(express.static('bower_components/nosleep'));
 app.use(express.static('node_modules/socket.io-client'));
 
 app.use(express.static('client'));
