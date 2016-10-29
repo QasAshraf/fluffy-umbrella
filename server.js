@@ -26,6 +26,6 @@ io.on('connection', function(socket){
         console.log('controllerData: ' + JSON.stringify(data, null, 4));
 
         //Lets forward on this data to the client game view
-        this.emit('serverUserData', data);
+        io.emit('serverUserData', data);
     });
 });
