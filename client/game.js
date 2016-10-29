@@ -174,7 +174,7 @@ function update() {
 
   var chance = Math.random()
   var maxcollidables = NUMBER_OF_LANES * 2
-  if (chance >= 0.95 && collidables.children.length < maxcollidables) {
+  if (chance >= 0.94 && collidables.children.length < maxcollidables) {
     var lane = pickLane(lanes)
     makeCollidable(lane)
   }
