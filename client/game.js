@@ -1,5 +1,11 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
+var states = {
+  GAME_OVER: "GAME_OVER",
+}
+
+var state;
+
 function preload() {
 
     game.load.image('sky', 'assets/sky.png');
@@ -37,13 +43,15 @@ function create() {
 }
 
 function makeCollidable(x) {
-    var collideable = collidables.create(x, 0, 'box')
-    collideable.scale.set(0.6, 0.6)
-    collideable.body.velocity.y = 100
-    collideable.body.immovable = true
-    collideable.checkWorldBounds = true
-    collideable.rotation = Math.floor(Math.random() * 360)
-    collideable.events.onOutOfBounds.add( getRidOfSprite, this )
+    var collidable = collidables.create(x, 0, 'box')
+    collidable.anchor.x = 0.5;
+    collidable.anchor.y = 0.5;
+    collidable.scale.set(0.6, 0.6)
+    collidable.body.velocity.y = 100
+    collidable.body.immovable = true
+    collidable.checkWorldBounds = true
+    collidable.rotation = Math.floor(Math.random() * 360)
+    collidable.events.onOutOfBounds.add( getRidOfSprite, this )
 }
 
 function getRidOfSprite(sprite) {
@@ -51,35 +59,47 @@ function getRidOfSprite(sprite) {
 }
 
 function update() {
+  if (state !== states.GAME_OVER) {
+    game.physics.arcade.collide(player, collidables, function (player, collidables) {
+      player.kill()
+      player = null
+      rollCredits()
+    })
 
     var chance = Math.random();
-    var maxCollideables = 10
-    if (chance >= 0.98 && collidables.children.length < maxCollideables) {
+    var maxcollidables = 10
+    if (chance >= 0.98 && collidables.children.length < maxcollidables) {
         makeCollidable(Math.random() * game.world.width);
     }
-    //  Reset the players velocity (movement)
-    player.body.velocity.x = 0;
 
-    if (cursors.left.isDown)
-    {
-        //  Move to the left
-        player.body.velocity.x = -150;
+    if (player.alive) {
+      player.body.velocity.x = 0;
 
-        player.animations.play('left');
+      if (cursors.left.isDown) {
+          player.body.velocity.x = -150;
+          player.animations.play('left');
+      } else if (cursors.right.isDown) {
+          player.body.velocity.x = 150;
+          player.animations.play('right');
+      } else {
+          player.animations.stop();
+          player.frame = 4;
+      }
     }
-    else if (cursors.right.isDown)
-    {
-        //  Move to the right
-        player.body.velocity.x = 150;
+  }
+}
 
-        player.animations.play('right');
-    }
-    else
-    {
-        //  Stand still
-        player.animations.stop();
+function rollCredits () {
+  var bar = game.add.graphics();
+  bar.beginFill(0x000000, 0.2);
+  bar.drawRect(0, 200, 800, 100);
 
-        player.frame = 4;
-    }
+  var style = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+  text = game.add.text(0, 0, "GAME OVER", style);
+  text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
+  text.setTextBounds(0, 200, 800, 100);
 
+
+  state = states.GAME_OVER
+  game.state.pause()
 }
