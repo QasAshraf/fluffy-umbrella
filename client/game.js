@@ -41,12 +41,42 @@ var collidableSprites = {
     scale: 0.6,
     rotation: true
   },
-  "blue-motorbike": {
+  "motorbike-blue": {
     spriteName: 'motorcycle_blue.png',
     spriteSheet: 'vehicles',
-    scale: 0.5,
+    scale: 0.6,
     rotation: false
-  }
+  },
+  "motorbike-red": {
+    spriteName: 'motorcycle_red.png',
+    spriteSheet: 'vehicles',
+    scale: 0.6,
+    rotation: false
+  },
+    "motorbike-green": {
+        spriteName: 'motorcycle_green.png',
+        spriteSheet: 'vehicles',
+        scale: 0.6,
+        rotation: false
+    },
+    "car-blue": {
+        spriteName: 'car_blue_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-red": {
+        spriteName: 'car_red_3.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green": {
+        spriteName: 'car_green_5.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    }
 }
 
 function create() {
