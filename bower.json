@@ -1,0 +1,22 @@
+{
+  "name": "fluffy-umbrella",
+  "description": "A racing game that has nothing to do with fluffiness or umbrellas.",
+  "main": "index.js",
+  "authors": [
+    "Kamikazee Kangaroos"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/adamjc/fluffy-umbrella",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "phaser": "~2.6.2"
+  }
+}
