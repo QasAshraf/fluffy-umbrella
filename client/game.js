@@ -1,8 +1,11 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update })
 var socket = io();
 
+var controllerData = {};
+
 socket.on('serverUserData', function(msg){
     console.log(msg);
+    controllerData = msg;
 });
 
 var states = {
@@ -113,6 +116,7 @@ function update() {
   }
 
   if (player.alive) {
+      
     player.body.velocity.x = 0
 
     if (cursors.left.isDown) {
@@ -125,5 +129,14 @@ function update() {
         player.animations.stop()
         player.frame = 4
     }
+
+
+    player.body.velocity.x = controllerData.accelY * 15;
+
+    if(controllerData.accelY > 0)
+        player.animations.play('left')
+    else
+        player.animations.play('right')
+
   }
 }
