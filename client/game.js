@@ -140,7 +140,7 @@ function makeCollidable(lane) {
     collidable.anchor.y = 0.5
     collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
     collidable.body.velocity.y = Math.random() * (400) + 300;
-    collidable.body.immovable = true
+    collidable.body.immovable = false
     collidable.checkWorldBounds = true
     collidable.rotation = randomCollidable.rotation ? Math.random(0, 360) : 0
     collidable.events.onOutOfBounds.add(getRidOfSprite, this)
@@ -173,8 +173,8 @@ function update() {
   })
 
   var chance = Math.random()
-  var maxcollidables = NUMBER_OF_LANES * 3
-  if (chance >= 0.97 && collidables.children.length < maxcollidables) {
+  var maxcollidables = NUMBER_OF_LANES * 2
+  if (chance >= 0.95 && collidables.children.length < maxcollidables) {
     var lane = pickLane(lanes)
     makeCollidable(lane)
   }
