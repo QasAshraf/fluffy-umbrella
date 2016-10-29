@@ -92,7 +92,9 @@ function create() {
     // The player and its settings
 
     // sprite (x position, y position, atlas name, image name)
-    player = game.add.sprite(300, game.world.height - 150, 'vehicles', 'car_black_1.png');
+    player = game.add.sprite(300, game.world.height - 150, 'vehicles', 'car_black_3.png');
+    player.scale.x = 0.9;
+    player.scale.y = 0.9;
 
     //  We need to enable physics on the player
     game.physics.arcade.enable(player);
