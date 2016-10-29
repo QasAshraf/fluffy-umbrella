@@ -20,6 +20,8 @@
 
     function motion(event){
         lastData = {
+            "id" : socket.id,
+            "name" : "Dave",
             "accelX" : event.accelerationIncludingGravity.x,
             "accelY" : event.accelerationIncludingGravity.y,
             "accelZ" : event.accelerationIncludingGravity.z,
@@ -29,8 +31,6 @@
     function updateServer(){
         socket.emit('controllerData', lastData);
     }
-
-
 
     //Lets stop the screen going off as we loose our controller connection
     var noSleep = new NoSleep();
