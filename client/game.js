@@ -20,32 +20,33 @@ function update_add_player_control(playerData)
 }
 
 function preload() {
-
-    game.load.image('sky', 'assets/sky.png');
-    game.load.image('box', 'assets/box.png');
+    game.load.image('road', 'assets/road.png')
+    game.load.image('sky', 'assets/sky.png')
+    game.load.image('box', 'assets/box.png')
     game.load.atlasXML(
         'vehicles',
         'assets/sprites/spritesheet_vehicles.png',
         'assets/sprites/spritesheet_vehicles.xml'
     )
 
+    // Explosions!
+    game.load.image('kaboom', 'assets/explosion.png', 64, 64);
+    game.load.audio('explosion', 'assets/explosion.wav');
+
     // Make game fill screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.pageAlignVertically = true;
+    game.scale.pageAlignHorizontally = true;
 }
 
+var explosion
+var player
 var players = {}
 var cursors
 var collidables
 var NUMBER_OF_LANES = 6
 var lanes = []
 var collidableSprites = {
-    "box": {
-        spriteName: 'box',
-        spriteSheet: null,
-        scale: 0.6,
-        rotation: true
-    },
     "motorbike-blue": {
         spriteName: 'motorcycle_blue.png',
         spriteSheet: 'vehicles',
@@ -97,27 +98,33 @@ function addPlayer(playerID) {
 }
 
 function create() {
+    var divisor = game.world.width / NUMBER_OF_LANES
+    for (var i = 0; i < game.world.width; i += divisor) {
+      lanes.push({
+        start: i,
+        end: i + (divisor - 1),
+        items: 0
+      })
+    }
+
+    lanes.forEach(function (lane) {
+        var laneSprite = game.add.sprite(lane.start, -200, 'road')
+        laneSprite.scale.x = ((lane.end - lane.start) / laneSprite.width) + 0.02 // get rid of weird black lines :/
+        laneSprite.scale.y = 2.5
+        lane.laneSprite = laneSprite
+    })
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE)
 
-    //  A simple background for our game
-    game.add.sprite(0, 0, 'sky')
+    // Audio
+    explosion = game.add.audio('explosion');
 
     collidables = game.add.physicsGroup()
 
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
-
-    var divisor = game.world.width / NUMBER_OF_LANES
-    for (var i = 0; i < game.world.width; i += divisor) {
-        lanes.push({
-            start: i,
-            end: i + (divisor - 1),
-            items: 0
-        })
-    }
 
     var socket = io();
     socket.on('serverUserData', function (msg) {
@@ -155,8 +162,8 @@ function makeCollidable(lane) {
     collidable.anchor.x = 0.5
     collidable.anchor.y = 0.5
     collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
-    collidable.body.velocity.y = 200
-    collidable.body.immovable = true
+    collidable.body.velocity.y = Math.random() * (400) + 300;
+    collidable.body.immovable = false
     collidable.checkWorldBounds = true
     collidable.rotation = randomCollidable.rotation ? Math.random(0, 360) : 0
     collidable.events.onOutOfBounds.add(getRidOfSprite, this)
@@ -170,17 +177,24 @@ function getRidOfSprite(sprite) {
     sprite.destroy()
 }
 
+function fadeExplosion() {
+    game.add.tween(explosion).to({ alpha: 0 }, 2000, Phaser.Easing.Elastic.In, true);
+    explosion.kill()
+}
+
 function updatePlayer(chosenPlayer) {
     game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
+        explosion.play();
+        explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
+        game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
         player.kill()
         player = null
     })
 
     var chance = Math.random()
-    var maxcollidables = 20
-    if (chance >= 0.97 && collidables.children.length < maxcollidables) {
+    var maxcollidables = NUMBER_OF_LANES * 2
+    if (chance >= 0.94 && collidables.children.length < maxcollidables) {
         var lane = pickLane(lanes)
-        //var lane = lanes[Math.floor(Math.random() * NUMBER_OF_LANES)]
         makeCollidable(lane)
     }
 
@@ -191,7 +205,6 @@ function updatePlayer(chosenPlayer) {
             chosenPlayer.animations.play('left')
         else
             chosenPlayer.animations.play('right')
-
 
         // Maybe we are testing with arrow keys
         if (cursors.left.isDown) {
@@ -208,6 +221,11 @@ function updatePlayer(chosenPlayer) {
 }
 
 function update() {
+
+    lanes.forEach(function (lane) {
+        lane.laneSprite.y += 8 //speed of road
+        if (lane.laneSprite.y >= 0) lane.laneSprite.y = -151 // Yes, I hate myself.
+    })
 
     for (var playerID in players) {
         if (players.hasOwnProperty(playerID)) {
