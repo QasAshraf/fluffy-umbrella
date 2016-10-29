@@ -12,6 +12,9 @@ function preload() {
     game.load.image('box', 'assets/box.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 
+    // Make game fill screen
+    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    game.scale.pageAlignVertically = true;
 }
 
 var player;
