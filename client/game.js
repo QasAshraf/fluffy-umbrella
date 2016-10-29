@@ -8,12 +8,6 @@ socket.on('serverUserData', function(msg){
     controllerData = msg;
 });
 
-var states = {
-  GAME_OVER: "GAME_OVER",
-}
-
-var state
-
 function preload() {
 
     game.load.image('sky', 'assets/sky.png');
@@ -166,7 +160,6 @@ function update() {
   var maxcollidables = 20
   if (chance >= 0.97 && collidables.children.length < maxcollidables) {
     var lane = pickLane(lanes)
-    //var lane = lanes[Math.floor(Math.random() * NUMBER_OF_LANES)]
     makeCollidable(lane)
   }
 
@@ -191,9 +184,6 @@ function update() {
         player.animations.stop()
         player.frame = 4
     }
-
-
-
-
+      
   }
 }
