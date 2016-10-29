@@ -17,6 +17,7 @@ function preload() {
         'assets/sprites/spritesheet_vehicles.png',
         'assets/sprites/spritesheet_vehicles.xml'
     )
+    game.load.image('kaboom', 'assets/explosion.png', 64, 64);
 
     // Make game fill screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -149,10 +150,16 @@ function getRidOfSprite(sprite) {
   sprite.destroy()
 }
 
+function fadeExplosion() {
+    game.add.tween(explosion).to({ alpha: 0 }, 2000, Phaser.Easing.Elastic.In, true);
+    explosion.kill()
+}
 function update() {
   game.physics.arcade.collide(player, collidables, function (player, collidables) {
-    player.kill()
-    player = null
+      explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
+      game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
+      player.kill()
+      player = null
   })
 
   var chance = Math.random()
