@@ -37,8 +37,15 @@ var lanes = []
 var collidableSprites = {
   "box": {
     spriteName: 'box',
+    spriteSheet: null,
     scale: 0.6,
     rotation: true
+  },
+  "blue-motorbike": {
+    spriteName: 'motorcycle_blue.png',
+    spriteSheet: 'vehicles',
+    scale: 0.5,
+    rotation: false
   }
 }
 
@@ -89,7 +96,13 @@ function makeCollidable(lane) {
     var difference = lane.end - lane.start
     var collidableLocation = lane.start + Math.floor(Math.random() * difference)
     var randomCollidable = pickRandomCollidable()
-    var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
+
+    if (randomCollidable.spriteSheet) {
+      var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteSheet, randomCollidable.spriteName)
+    } else {
+      var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
+    }
+
 
     lane.items += 1
     collidable.lane = lane
