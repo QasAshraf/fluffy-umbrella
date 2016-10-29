@@ -1,12 +1,23 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update })
-var socket = io();
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update})
 
-var controllerData = {};
+function addControlData(player, playerData)
+{
+    player.controlData = playerData;
+}
 
-socket.on('serverUserData', function(msg){
-    console.log(msg);
-    controllerData = msg;
-});
+function update_add_player_control(playerData)
+{
+    if (players.hasOwnProperty(playerData.id)) {
+        addControlData(players[playerData.id], playerData);
+        return;
+    }
+
+    // Looks like we have created this player, must be a new comer
+    console.log("Welcome: " + playerData.id);
+
+    addPlayer(playerData.id);
+    addControlData(players[playerData.id], playerData);
+}
 
 function preload() {
     game.load.image('road', 'assets/road.png')
@@ -30,6 +41,7 @@ function preload() {
 
 var explosion
 var player
+var players = {}
 var cursors
 var collidables
 var NUMBER_OF_LANES = 6
@@ -73,6 +85,18 @@ var collidableSprites = {
     }
 }
 
+function addPlayer(playerID) {
+
+    var offset = 100 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
+
+    players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', 'car_black_3.png');
+    players[playerID].scale.x = 0.9
+    players[playerID].scale.y = 0.9
+
+    //  We need to enable physics on the players
+    game.physics.arcade.enable(players[playerID]);
+}
+
 function create() {
     var divisor = game.world.width / NUMBER_OF_LANES
     for (var i = 0; i < game.world.width; i += divisor) {
@@ -91,39 +115,34 @@ function create() {
     })
 
     //  We're going to be using physics, so enable the Arcade Physics system
-//    game.physics.startSystem(Phaser.Physics.ARCADE)
-    game.physics.startSystem(Phaser.Physics.P2JS);
-
+    game.physics.startSystem(Phaser.Physics.ARCADE)
 
     // Audio
     explosion = game.add.audio('explosion');
 
-    //collidables = game.add.physicsGroup()
-    collidables = game.add.physicsGroup(Phaser.Physics.P2JS);
+    collidables = game.add.physicsGroup()
 
-    // The player and its settings
-    // sprite (x position, y position, atlas name, image name)
-    player = game.add.sprite(300, game.world.height - 150, 'vehicles', 'car_black_3.png');
-    player.scale.x = 0.9;
-    player.scale.y = 0.9;
-
-    //  We need to enable physics on the player
-    game.physics.p2.enable(player);
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
+
+    var socket = io();
+    socket.on('serverUserData', function (msg) {
+        console.log(msg);
+        update_add_player_control(msg);
+    });
 }
 
-function pickLane (lanes) {
-  return lanes.reduce(function (a, b) {
-    return a.items > b.items ? b : a
-  })
+function pickLane(lanes) {
+    return lanes.reduce(function (a, b) {
+        return a.items > b.items ? b : a
+    })
 }
 
 function pickRandomCollidable() {
-  var collidableSize = Object.keys(collidableSprites).length
-  var collidableName = Object.keys(collidableSprites)[Math.floor(Math.random() * collidableSize)]
-  return collidableSprites[collidableName]
+    var collidableSize = Object.keys(collidableSprites).length
+    var collidableName = Object.keys(collidableSprites)[Math.floor(Math.random() * collidableSize)]
+    return collidableSprites[collidableName]
 }
 
 function makeCollidable(lane) {
@@ -132,78 +151,85 @@ function makeCollidable(lane) {
     var randomCollidable = pickRandomCollidable()
 
     if (randomCollidable.spriteSheet) {
-      var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteSheet, randomCollidable.spriteName)
+        var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteSheet, randomCollidable.spriteName)
     } else {
-      var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
+        var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
     }
 
-    collidable.body.collideWorldBounds = false;
-    collidable.body.collidesWith.push(collidables)
+
     lane.items += 1
     collidable.lane = lane
     collidable.anchor.x = 0.5
     collidable.anchor.y = 0.5
     collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
     collidable.body.velocity.y = Math.random() * (400) + 300;
+    collidable.body.immovable = false
     collidable.checkWorldBounds = true
     collidable.rotation = randomCollidable.rotation ? Math.random(0, 360) : 0
     collidable.events.onOutOfBounds.add(getRidOfSprite, this)
 }
 
 function getRidOfSprite(sprite) {
-  if (sprite.lane) {
-    sprite.lane.items -= 1
-  }
+    if (sprite.lane) {
+        sprite.lane.items -= 1
+    }
 
-  sprite.destroy()
+    sprite.destroy()
 }
 
 function fadeExplosion() {
     game.add.tween(explosion).to({ alpha: 0 }, 2000, Phaser.Easing.Elastic.In, true);
     explosion.kill()
 }
+
+function updatePlayer(chosenPlayer) {
+    game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
+        explosion.play();
+        explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
+        game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
+        player.kill()
+        player = null
+    })
+
+    var chance = Math.random()
+    var maxcollidables = NUMBER_OF_LANES * 2
+    if (chance >= 0.94 && collidables.children.length < maxcollidables) {
+        var lane = pickLane(lanes)
+        makeCollidable(lane)
+    }
+
+    if (chosenPlayer.alive) {
+        chosenPlayer.body.velocity.x = chosenPlayer.controlData.accelY * 30;
+
+        if (chosenPlayer.controlData.accelY > 0)
+            chosenPlayer.animations.play('left')
+        else
+            chosenPlayer.animations.play('right')
+
+        // Maybe we are testing with arrow keys
+        if (cursors.left.isDown) {
+            chosenPlayer.body.velocity.x = -300
+            chosenPlayer.animations.play('left')
+        } else if (cursors.right.isDown) {
+            chosenPlayer.body.velocity.x = 300
+            chosenPlayer.animations.play('right')
+        } else {
+            chosenPlayer.animations.stop()
+            chosenPlayer.frame = 4
+        }
+    }
+}
+
 function update() {
+
     lanes.forEach(function (lane) {
         lane.laneSprite.y += 8 //speed of road
         if (lane.laneSprite.y >= 0) lane.laneSprite.y = -151 // Yes, I hate myself.
     })
 
-    // game.physics.p2.collide(player, collidables, function (player, collidables) {
-    //     explosion.play();
-    //     explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
-    //     game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
-    //     player.kill()
-    //     player = null
-    // })
-
-  var chance = Math.random()
-  var maxcollidables = NUMBER_OF_LANES * 3
-  if (chance >= 0.97 && collidables.children.length < maxcollidables) {
-    var lane = pickLane(lanes)
-    makeCollidable(lane)
-  }
-
-  if (player.alive) {
-
-    player.body.velocity.x = 0
-    player.body.velocity.x = controllerData.accelY * 30;
-
-    if(controllerData.accelY > 0)
-      player.animations.play('left')
-    else
-      player.animations.play('right')
-
-
-    if (cursors.left.isDown) {
-        player.body.velocity.x = -300
-        player.animations.play('left')
-    } else if (cursors.right.isDown) {
-        player.body.velocity.x = 300
-        player.animations.play('right')
-    } else {
-        player.animations.stop()
-        player.frame = 4
+    for (var playerID in players) {
+        if (players.hasOwnProperty(playerID)) {
+            updatePlayer(players[playerID])
+        }
     }
-
-  }
 }
