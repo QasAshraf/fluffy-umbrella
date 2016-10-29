@@ -27,6 +27,12 @@ var cursors
 var collidables
 var NUMBER_OF_LANES = 6
 var lanes = []
+var collidableSprites = {
+  'box': {
+    spriteName: 'box',
+    scale: 0.6
+  }
+}
 
 function create() {
 
@@ -61,16 +67,23 @@ function create() {
     }
 }
 
+function pickRandomCollidable() {
+  var collidableSize = Object.keys(collidableSprites).length
+  var collidableName = Object.keys(collidableSprites)[Math.floor(Math.random() * collidableSize)]
+  return collidableSprites[collidableName]
+}
+
 function makeCollidable(lane) {
     var difference = lane.end - lane.start
     var collidableLocation = lane.start + Math.floor(Math.random() * difference)
-    var collidable = collidables.create(collidableLocation, 0, 'box')
+    var randomCollidable = pickRandomCollidable()
+    var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
+
     lane.items += 1
     collidable.lane = lane
-
     collidable.anchor.x = 0.5
     collidable.anchor.y = 0.5
-    collidable.scale.set(0.6, 0.6)
+    collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
     collidable.body.velocity.y = 100
     collidable.body.immovable = true
     collidable.checkWorldBounds = true
