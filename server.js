@@ -5,5 +5,5 @@ app.use(express.static('static'));
 app.use(express.static('bower_components/phaser/build'));
 
 app.listen(8080, function () {
-    console.log('Game server listening on port 8080!');
+    console.log('Game2 server listening on port 8080!');
 });
