@@ -17,7 +17,10 @@ function preload() {
         'assets/sprites/spritesheet_vehicles.png',
         'assets/sprites/spritesheet_vehicles.xml'
     )
+
+    // Explosions!
     game.load.image('kaboom', 'assets/explosion.png', 64, 64);
+    game.load.audio('explosion', 'assets/explosion.wav');
 
     // Make game fill screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -25,6 +28,7 @@ function preload() {
     game.scale.pageAlignHorizontally = true;
 }
 
+var explosion
 var player
 var cursors
 var collidables
@@ -89,6 +93,9 @@ function create() {
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE)
 
+    // Audio
+    explosion = game.add.audio('explosion');
+    
     collidables = game.add.physicsGroup()
 
     // The player and its settings
@@ -158,8 +165,9 @@ function update() {
     })
 
   game.physics.arcade.collide(player, collidables, function (player, collidables) {
+      explosion.play();
       explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
-      game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
+      game.time.events.add(Phaser.Timer.SECOND * 3, fadeExplosion, explosion);
       player.kill()
       player = null
   })
