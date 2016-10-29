@@ -32,9 +32,10 @@ var collidables
 var NUMBER_OF_LANES = 6
 var lanes = []
 var collidableSprites = {
-  'box': {
+  "box": {
     spriteName: 'box',
-    scale: 0.6
+    scale: 0.6,
+    rotation: true
   }
 }
 
@@ -55,7 +56,7 @@ function create() {
 
     //  We need to enable physics on the player
     game.physics.arcade.enable(player);
-    
+
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
 
@@ -95,7 +96,7 @@ function makeCollidable(lane) {
     collidable.body.velocity.y = 200
     collidable.body.immovable = true
     collidable.checkWorldBounds = true
-    collidable.rotation = Math.floor(Math.random() * 360)
+    collidable.rotation = randomCollidable.rotation ? Math.random(0, 360) : 0
     collidable.events.onOutOfBounds.add(getRidOfSprite, this)
 }
 
