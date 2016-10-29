@@ -23,8 +23,7 @@ io.on('connection', function(socket){
     });
 
     socket.on('controllerData', function(data){
-        console.log('controllerData: ' + data);
+        console.log('controllerData: ' + JSON.stringify(data, null, 4));
 
-        this.emit('serverBroadcast', "pong");
     });
 });
