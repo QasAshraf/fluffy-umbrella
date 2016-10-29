@@ -18,6 +18,7 @@
   ],
   "dependencies": {
     "phaser": "~2.6.2",
-    "nosleep": "^0.5.0"
+    "nosleep": "^0.5.0",
+    "foundation-sites": "~6.2.4"
   }
 }
