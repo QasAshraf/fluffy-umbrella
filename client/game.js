@@ -59,47 +59,29 @@ function getRidOfSprite(sprite) {
 }
 
 function update() {
-  if (state !== states.GAME_OVER) {
-    game.physics.arcade.collide(player, collidables, function (player, collidables) {
-      player.kill()
-      player = null
-      rollCredits()
-    })
+  game.physics.arcade.collide(player, collidables, function (player, collidables) {
+    player.kill()
+    player = null
+  })
 
-    var chance = Math.random();
-    var maxcollidables = 10
-    if (chance >= 0.98 && collidables.children.length < maxcollidables) {
-        makeCollidable(Math.random() * game.world.width);
-    }
+  var chance = Math.random();
+  var maxcollidables = 10
+  if (chance >= 0.98 && collidables.children.length < maxcollidables) {
+      makeCollidable(Math.random() * game.world.width);
+  }
 
-    if (player.alive) {
-      player.body.velocity.x = 0;
+  if (player.alive) {
+    player.body.velocity.x = 0;
 
-      if (cursors.left.isDown) {
-          player.body.velocity.x = -150;
-          player.animations.play('left');
-      } else if (cursors.right.isDown) {
-          player.body.velocity.x = 150;
-          player.animations.play('right');
-      } else {
-          player.animations.stop();
-          player.frame = 4;
-      }
+    if (cursors.left.isDown) {
+        player.body.velocity.x = -150;
+        player.animations.play('left');
+    } else if (cursors.right.isDown) {
+        player.body.velocity.x = 150;
+        player.animations.play('right');
+    } else {
+        player.animations.stop();
+        player.frame = 4;
     }
   }
-}
-
-function rollCredits () {
-  var bar = game.add.graphics();
-  bar.beginFill(0x000000, 0.2);
-  bar.drawRect(0, 200, 800, 100);
-
-  var style = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-  text = game.add.text(0, 0, "GAME OVER", style);
-  text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
-  text.setTextBounds(0, 200, 800, 100);
-
-
-  state = states.GAME_OVER
-  game.state.pause()
 }
