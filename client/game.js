@@ -128,7 +128,7 @@ function makeCollidable(lane) {
     } else {
       var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
     }
-    
+
     lane.items += 1
     collidable.lane = lane
     collidable.anchor.x = 0.5
@@ -156,7 +156,7 @@ function update() {
   })
 
   var chance = Math.random()
-  var maxcollidables = 20
+  var maxcollidables = NUMBER_OF_LANES * 3
   if (chance >= 0.97 && collidables.children.length < maxcollidables) {
     var lane = pickLane(lanes)
     makeCollidable(lane)
