@@ -183,13 +183,13 @@ function fadeExplosion() {
 }
 
 function updatePlayer(chosenPlayer) {
-    game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
+    /*game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
         explosion.play();
         explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
         game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
         player.kill()
         player = null
-    })
+    })*/
 
     var chance = Math.random()
     var maxcollidables = NUMBER_OF_LANES * 2
