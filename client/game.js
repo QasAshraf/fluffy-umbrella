@@ -16,9 +16,13 @@ var state
 
 function preload() {
 
-    game.load.image('sky', 'assets/sky.png')
-    game.load.image('box', 'assets/box.png')
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48)
+    game.load.image('sky', 'assets/sky.png');
+    game.load.image('box', 'assets/box.png');
+    game.load.atlasXML(
+        'vehicles',
+        'assets/sprites/spritesheet_vehicles.png',
+        'assets/sprites/spritesheet_vehicles.xml'
+    )
 
     // Make game fill screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -31,9 +35,10 @@ var collidables
 var NUMBER_OF_LANES = 6
 var lanes = []
 var collidableSprites = {
-  'box': {
+  "box": {
     spriteName: 'box',
-    scale: 0.6
+    scale: 0.6,
+    rotation: true
   }
 }
 
@@ -48,14 +53,12 @@ function create() {
     collidables = game.add.physicsGroup()
 
     // The player and its settings
-    player = game.add.sprite(32, game.world.height - 150, 'dude')
+
+    // sprite (x position, y position, atlas name, image name)
+    player = game.add.sprite(300, game.world.height - 150, 'vehicles', 'car_black_1.png');
 
     //  We need to enable physics on the player
-    game.physics.arcade.enable(player)
-
-    //  Our two animations, walking left and right.
-    player.animations.add('left', [0, 1, 2, 3], 10, true)
-    player.animations.add('right', [5, 6, 7, 8], 10, true)
+    game.physics.arcade.enable(player);
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
@@ -68,6 +71,12 @@ function create() {
         items: 0
       })
     }
+}
+
+function pickLane (lanes) {
+  return lanes.reduce(function (a, b) {
+    return a.items > b.items ? b : a
+  })
 }
 
 function pickRandomCollidable() {
@@ -87,10 +96,10 @@ function makeCollidable(lane) {
     collidable.anchor.x = 0.5
     collidable.anchor.y = 0.5
     collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
-    collidable.body.velocity.y = 100
+    collidable.body.velocity.y = 200
     collidable.body.immovable = true
     collidable.checkWorldBounds = true
-    collidable.rotation = Math.floor(Math.random() * 360)
+    collidable.rotation = randomCollidable.rotation ? Math.random(0, 360) : 0
     collidable.events.onOutOfBounds.add(getRidOfSprite, this)
 }
 
@@ -109,9 +118,10 @@ function update() {
   })
 
   var chance = Math.random()
-  var maxcollidables = 10
-  if (chance >= 0.98 && collidables.children.length < maxcollidables) {
-    var lane = lanes[Math.floor(Math.random() * NUMBER_OF_LANES)]
+  var maxcollidables = 20
+  if (chance >= 0.97 && collidables.children.length < maxcollidables) {
+    var lane = pickLane(lanes)
+    //var lane = lanes[Math.floor(Math.random() * NUMBER_OF_LANES)]
     makeCollidable(lane)
   }
 
