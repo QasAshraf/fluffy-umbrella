@@ -10,8 +10,11 @@ function preload() {
 
     game.load.image('sky', 'assets/sky.png');
     game.load.image('box', 'assets/box.png');
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-
+    game.load.atlasXML(
+        'vehicles',
+        'assets/sprites/spritesheet_vehicles.png',
+        'assets/sprites/spritesheet_vehicles.xml'
+    )
     // Make game fill screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.pageAlignVertically = true;
@@ -32,15 +35,12 @@ function create() {
     collidables = game.add.physicsGroup();
 
     // The player and its settings
-    player = game.add.sprite(32, game.world.height - 150, 'dude');
+    // sprite (x position, y position, atlas name, image name)
+    player = game.add.sprite(500, game.world.height - 150, 'vehicles', 'car_black_1.png');
 
     //  We need to enable physics on the player
     game.physics.arcade.enable(player);
-
-    //  Our two animations, walking left and right.
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
-
+    
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
 }
