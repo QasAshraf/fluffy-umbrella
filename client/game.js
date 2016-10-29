@@ -21,6 +21,7 @@ function preload() {
     // Make game fill screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.pageAlignVertically = true;
+    game.scale.pageAlignHorizontally = true;
 }
 
 var player
@@ -84,7 +85,6 @@ function create() {
     collidables = game.add.physicsGroup()
 
     // The player and its settings
-
     // sprite (x position, y position, atlas name, image name)
     player = game.add.sprite(300, game.world.height - 150, 'vehicles', 'car_black_3.png');
     player.scale.x = 0.9;
@@ -128,8 +128,7 @@ function makeCollidable(lane) {
     } else {
       var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
     }
-
-
+    
     lane.items += 1
     collidable.lane = lane
     collidable.anchor.x = 0.5
@@ -184,6 +183,6 @@ function update() {
         player.animations.stop()
         player.frame = 4
     }
-      
+
   }
 }
