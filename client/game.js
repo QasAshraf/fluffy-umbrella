@@ -9,9 +9,9 @@ socket.on('serverUserData', function(msg){
 });
 
 function preload() {
-
-    game.load.image('sky', 'assets/sky.png');
-    game.load.image('box', 'assets/box.png');
+    game.load.image('road', 'assets/road.png')
+    game.load.image('sky', 'assets/sky.png')
+    game.load.image('box', 'assets/box.png')
     game.load.atlasXML(
         'vehicles',
         'assets/sprites/spritesheet_vehicles.png',
@@ -35,24 +35,24 @@ var collidables
 var NUMBER_OF_LANES = 6
 var lanes = []
 var collidableSprites = {
-  "box": {
-    spriteName: 'box',
-    spriteSheet: null,
-    scale: 0.6,
-    rotation: true
-  },
-  "motorbike-blue": {
-    spriteName: 'motorcycle_blue.png',
-    spriteSheet: 'vehicles',
-    scale: 0.6,
-    rotation: false
-  },
-  "motorbike-red": {
-    spriteName: 'motorcycle_red.png',
-    spriteSheet: 'vehicles',
-    scale: 0.6,
-    rotation: false
-  },
+    "box": {
+        spriteName: 'box',
+        spriteSheet: null,
+        scale: 0.6,
+        rotation: true
+    },
+    "motorbike-blue": {
+        spriteName: 'motorcycle_blue.png',
+        spriteSheet: 'vehicles',
+        scale: 0.6,
+        rotation: false
+    },
+    "motorbike-red": {
+        spriteName: 'motorcycle_red.png',
+        spriteSheet: 'vehicles',
+        scale: 0.6,
+        rotation: false
+    },
     "motorbike-green": {
         spriteName: 'motorcycle_green.png',
         spriteSheet: 'vehicles',
@@ -80,16 +80,28 @@ var collidableSprites = {
 }
 
 function create() {
+    var divisor = game.world.width / NUMBER_OF_LANES
+    for (var i = 0; i < game.world.width; i += divisor) {
+      lanes.push({
+        start: i,
+        end: i + (divisor - 1),
+        items: 0
+      })
+    }
+
+    lanes.forEach(function (lane) {
+        var laneSprite = game.add.sprite(lane.start, -200, 'road')
+        laneSprite.scale.x = ((lane.end - lane.start) / laneSprite.width) + 0.02 // get rid of weird black lines :/
+        laneSprite.scale.y = 2.5
+        lane.laneSprite = laneSprite
+    })
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE)
 
-    //  A simple background for our game
-    game.add.sprite(0, 0, 'sky')
-
     // Audio
     explosion = game.add.audio('explosion');
-
+    
     collidables = game.add.physicsGroup()
 
     // The player and its settings
@@ -103,15 +115,6 @@ function create() {
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
-
-    var divisor = game.world.width / NUMBER_OF_LANES
-    for (var i = 0; i < game.world.width; i += divisor) {
-      lanes.push({
-        start: i,
-        end: i + (divisor - 1),
-        items: 0
-      })
-    }
 }
 
 function pickLane (lanes) {
@@ -162,6 +165,11 @@ function fadeExplosion() {
     explosion.kill()
 }
 function update() {
+    lanes.forEach(function (lane) {
+        lane.laneSprite.y += 4
+        if (lane.laneSprite.y >= 0) lane.laneSprite.y = -151 // Yes, I hate myself.
+    })
+
   game.physics.arcade.collide(player, collidables, function (player, collidables) {
       explosion.play();
       explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
@@ -178,7 +186,7 @@ function update() {
   }
 
   if (player.alive) {
-      
+
     player.body.velocity.x = 0
     player.body.velocity.x = controllerData.accelY * 30;
 
