@@ -128,12 +128,19 @@ function update() {
   if (player.alive) {
       
     player.body.velocity.x = 0
+    player.body.velocity.x = controllerData.accelY * 30;
+
+    if(controllerData.accelY > 0)
+      player.animations.play('left')
+    else
+      player.animations.play('right')
+
 
     if (cursors.left.isDown) {
-        player.body.velocity.x = -150
+        player.body.velocity.x = -300
         player.animations.play('left')
     } else if (cursors.right.isDown) {
-        player.body.velocity.x = 150
+        player.body.velocity.x = 300
         player.animations.play('right')
     } else {
         player.animations.stop()
@@ -141,12 +148,7 @@ function update() {
     }
 
 
-    player.body.velocity.x = controllerData.accelY * 15;
 
-    if(controllerData.accelY > 0)
-        player.animations.play('left')
-    else
-        player.animations.play('right')
 
   }
 }
