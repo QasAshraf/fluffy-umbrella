@@ -162,7 +162,7 @@ function makeCollidable(lane) {
     collidable.anchor.x = 0.5
     collidable.anchor.y = 0.5
     collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
-    collidable.body.velocity.y = Math.random() * (400) + 300;
+    collidable.body.velocity.y = Math.random() * (100) + 300;
     collidable.body.immovable = false
     collidable.checkWorldBounds = true
     collidable.rotation = randomCollidable.rotation ? Math.random(0, 360) : 0
@@ -183,13 +183,13 @@ function fadeExplosion() {
 }
 
 function updatePlayer(chosenPlayer) {
-    /*game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
+    game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
         explosion.play();
         explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
         game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
         player.kill()
         player = null
-    })*/
+    })
 
     var chance = Math.random()
     var maxcollidables = NUMBER_OF_LANES * 2
@@ -199,7 +199,7 @@ function updatePlayer(chosenPlayer) {
     }
 
     if (chosenPlayer.alive) {
-        chosenPlayer.body.velocity.x = chosenPlayer.controlData.accelY * 30;
+        chosenPlayer.body.velocity.x = chosenPlayer.controlData.accelY * 60;
 
         if (chosenPlayer.controlData.accelY > 0)
             chosenPlayer.animations.play('left')
