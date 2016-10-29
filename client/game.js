@@ -8,12 +8,6 @@ socket.on('serverUserData', function(msg){
     controllerData = msg;
 });
 
-var states = {
-  GAME_OVER: "GAME_OVER",
-}
-
-var state
-
 function preload() {
 
     game.load.image('sky', 'assets/sky.png');
@@ -27,6 +21,7 @@ function preload() {
     // Make game fill screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.pageAlignVertically = true;
+    game.scale.pageAlignHorizontally = true;
 }
 
 var player
@@ -90,7 +85,6 @@ function create() {
     collidables = game.add.physicsGroup()
 
     // The player and its settings
-
     // sprite (x position, y position, atlas name, image name)
     player = game.add.sprite(300, game.world.height - 150, 'vehicles', 'car_black_3.png');
     player.scale.x = 0.9;
@@ -134,8 +128,7 @@ function makeCollidable(lane) {
     } else {
       var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
     }
-
-
+    
     lane.items += 1
     collidable.lane = lane
     collidable.anchor.x = 0.5
@@ -166,7 +159,6 @@ function update() {
   var maxcollidables = 20
   if (chance >= 0.97 && collidables.children.length < maxcollidables) {
     var lane = pickLane(lanes)
-    //var lane = lanes[Math.floor(Math.random() * NUMBER_OF_LANES)]
     makeCollidable(lane)
   }
 
@@ -191,9 +183,6 @@ function update() {
         player.animations.stop()
         player.frame = 4
     }
-
-
-
 
   }
 }
