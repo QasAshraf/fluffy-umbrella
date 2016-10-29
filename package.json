@@ -4,7 +4,8 @@
   "description": "A racing game that has nothing to do with fluffiness or umbrellas.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "./node_modules/.bin/bower --allow-root install"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/adamjc/fluffy-umbrella#readme",
   "dependencies": {
+    "bower": "^1.7.9",
     "express": "^4.14.0",
     "socket.io": "^1.5.1"
   }
