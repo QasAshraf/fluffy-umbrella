@@ -1,6 +1,9 @@
 <script src="/socket.io.js"></script>
 <script>
     var socket = io();
+    var lastData;
+
+
     socket.emit('controllerData', 'ping');
 
     socket.on('serverBroadcast', function(msg){
@@ -13,19 +16,22 @@
         console.log("DeviceMotionEvent is not supported");
     }
 
-    function motion(event){
-        console.log("Accelerometer: "
-                + event.accelerationIncludingGravity.x + ", "
-                + event.accelerationIncludingGravity.y + ", "
-                + event.accelerationIncludingGravity.z
-        );
+    window.setInterval(updateServer, 50);
 
-        socket.emit('controllerData', {
+    function motion(event){
+
+        lastData = {
             "accelX" : event.accelerationIncludingGravity.x,
             "accelY" : event.accelerationIncludingGravity.y,
             "accelZ" : event.accelerationIncludingGravity.z,
-        });
+        };
+
     }
+
+    function updateServer(){
+        socket.emit('controllerData', lastData);
+    }
+    
 </script>
 
 <h1>welcome to the awesome game controller</h1>
