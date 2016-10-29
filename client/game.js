@@ -69,6 +69,12 @@ function create() {
     }
 }
 
+function pickLane (lanes) {
+  return lanes.reduce(function (a, b) {
+    return a.items > b.items ? b : a
+  })
+}
+
 function pickRandomCollidable() {
   var collidableSize = Object.keys(collidableSprites).length
   var collidableName = Object.keys(collidableSprites)[Math.floor(Math.random() * collidableSize)]
@@ -86,7 +92,7 @@ function makeCollidable(lane) {
     collidable.anchor.x = 0.5
     collidable.anchor.y = 0.5
     collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
-    collidable.body.velocity.y = 100
+    collidable.body.velocity.y = 200
     collidable.body.immovable = true
     collidable.checkWorldBounds = true
     collidable.rotation = Math.floor(Math.random() * 360)
@@ -108,9 +114,10 @@ function update() {
   })
 
   var chance = Math.random()
-  var maxcollidables = 10
-  if (chance >= 0.98 && collidables.children.length < maxcollidables) {
-    var lane = lanes[Math.floor(Math.random() * NUMBER_OF_LANES)]
+  var maxcollidables = 20
+  if (chance >= 0.97 && collidables.children.length < maxcollidables) {
+    var lane = pickLane(lanes)
+    //var lane = lanes[Math.floor(Math.random() * NUMBER_OF_LANES)]
     makeCollidable(lane)
   }
 
