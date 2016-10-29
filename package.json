@@ -1,0 +1,23 @@
+{
+  "name": "fluffy-umbrella",
+  "version": "1.0.0",
+  "description": "A racing game that has nothing to do with fluffiness or umbrellas.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adamjc/fluffy-umbrella.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adamjc/fluffy-umbrella/issues"
+  },
+  "homepage": "https://github.com/adamjc/fluffy-umbrella#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.5.1"
+  }
+}
