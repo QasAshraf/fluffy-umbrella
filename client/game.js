@@ -1,4 +1,9 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update })
+var socket = io();
+
+socket.on('serverUserData', function(msg){
+    console.log(msg);
+});
 
 var states = {
   GAME_OVER: "GAME_OVER",
