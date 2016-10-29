@@ -1,0 +1,11 @@
+<script src="/socket.io.js"></script>
+<script>
+    var socket = io();
+    socket.emit('controllerData', 'ping');
+
+    socket.on('serverBroadcast', function(msg){
+        alert(msg);
+    });
+</script>
+
+<h1>welcome to the awesome game controller</h1>
