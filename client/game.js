@@ -355,10 +355,11 @@ function getRidOfSprite(sprite) {
     sprite.destroy()
 }
 
-function fadeExplosion() {
-    game.add.tween(explosion).to({ alpha: 0 }, 2000, Phaser.Easing.Elastic.In, true);
-    explosion.kill()
+function cleanUpExplosion()
+{
+    explosions[this].destroy();
 }
+var explosions = {}
 
 function killPlayerIfCrashed(chosenPlayer) {
     game.physics.arcade.collide(chosenPlayer, collidables, function (player) {
@@ -376,8 +377,8 @@ function killPlayerIfCrashed(chosenPlayer) {
         player = null
     })
 }
-function updatePlayer(chosenPlayer) {
 
+function updatePlayer(chosenPlayer) {
     if (!chosenPlayer.invincible) {
         killPlayerIfCrashed(chosenPlayer);
     }
@@ -421,7 +422,11 @@ function update() {
 function render () {
     var y = 64;
     for (var playerID in players) {
-        game.debug.text('>> ' + playerID + ': ' + players[playerID].score, 32, y);
+
+        if(typeof players[playerID].controlData != 'undefined'){
+            game.debug.text('>> ' + players[playerID].controlData.name + ': ' + players[playerID].score, 32, y);
+        }
+
         y = y + 32;
     }
 }
