@@ -351,13 +351,13 @@ function addPlayer(playerID) {
 
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID].car)
-    
+
     if(!bgMusicPlaying) {
         ion.sound.play("bgmusic");
         bgMusicPlaying = true;
     }
 
-    player.body.setSize(player.width - 25, player.height, 15);
+    player.body.setSize(player.width - 15, player.height - 10, 11, 10);
     player.body.collideWorldBounds = true
 
     displayBanner("New player connected", 1000);
