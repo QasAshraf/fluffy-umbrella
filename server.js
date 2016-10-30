@@ -10,7 +10,7 @@ app.use(express.static('node_modules/socket.io-client'));
 
 app.use(express.static('client'));
 
-app.use('/controller', express.static('controller'));
+app.use('/play', express.static('controller'));
 
 
 http.listen(8080, function () {
