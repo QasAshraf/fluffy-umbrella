@@ -16,6 +16,31 @@ ion.sound({
 var bgMusicPlaying = false;
 
 
+function displayBanner(msg, timeout) {
+    console.log("add banner msg: " + msg);
+
+    bannertext = game.add.text(game.world.centerX, 100, msg);
+    bannertext.anchor.setTo(0.5);
+
+    bannertext.font = 'Coiny';
+    bannertext.fontSize = 40;
+
+    //  x0, y0 - x1, y1
+    grd = bannertext.context.createLinearGradient(0, 0, 0, bannertext.canvas.height);
+    grd.addColorStop(0, '#ffb3b3');
+    grd.addColorStop(1, '#ff0000');
+    bannertext.fill = grd;
+
+    bannertext.align = 'center';
+    bannertext.stroke = '#000000';
+    bannertext.strokeThickness = 2;
+    bannertext.setShadow(5, 5, 'rgba(0,0,0,0.5)', 5);
+
+    //game.add.tween(bannertext).to( { alpha: 1 }, 2000, "Linear", true);
+
+    bannertext.lifespan = timeout;
+}
+
 function addControlData(player, playerData)
 {
     player.controlData = playerData;
@@ -279,6 +304,14 @@ var current_car_index = 0
 
 function addBonusScore(player, collectible) {
     player.score += Math.round(Math.random() * (48) + 2); // 2 - 50
+
+    var msg = "";
+    if(player.controlData.name)
+        msg = player.controlData.name + " grabbed some points";
+    else
+        msg = "bonus points claimed";
+
+    displayBanner(msg, 750);
 }
 
 function addPlayer(playerID) {
@@ -326,6 +359,8 @@ function addPlayer(playerID) {
 
     player.body.setSize(player.width - 25, player.height, 15);
     player.body.collideWorldBounds = true
+
+    displayBanner("New player connected", 1000);
 }
 
 function createText() {
@@ -395,9 +430,9 @@ function create() {
     });
 
     socket.on('serverUserData', function (msg) {
-        if (text != undefined) {
+        //if (text != undefined) {
             text.destroy()
-        }
+        //}
         if(msg)
         {
             updateOrAddPlayerControl(msg);
@@ -621,7 +656,7 @@ function render () {
             count++;
         }
 
-        game.debug.body(players[playerID].car)
+        //game.debug.body(players[playerID].car)
 
         y = y + 32;
     }
