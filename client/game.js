@@ -397,7 +397,9 @@ function updateLeaderBoard(player) {
     console.log("Try the leaderboard");
     console.log(player);
 
-    if(!player.controlData.name)
+
+
+    if(typeof player.controlData.name == 'undefined' || !player.controlData.name)
         return;
 
     if(typeof leaderboard[player.controlData.id] != "undefined")
@@ -422,6 +424,7 @@ function updateLeaderBoard(player) {
         }
     }
 
+    console.log(leaderboard);
     console.log(leadersString);
 
     document.getElementById("high-scores").innerHTML = leadersString;
