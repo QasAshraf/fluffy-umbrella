@@ -94,12 +94,6 @@ var collidableSprites = {
         scale: 0.8,
         rotation: false
     },
-    "car-blue3": {
-        spriteName: 'car_blue_3.png',
-        spriteSheet: 'vehicles',
-        scale: 0.8,
-        rotation: false
-    },
     "car-blue4": {
         spriteName: 'car_blue_4.png',
         spriteSheet: 'vehicles',
@@ -113,18 +107,12 @@ var collidableSprites = {
         rotation: false
     },
     "car-red": {
-        spriteName: 'car_red_3.png',
-        spriteSheet: 'vehicles',
-        scale: 0.8,
-        rotation: false
-    },
-    "car-red2": {
         spriteName: 'car_red_1.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
     },
-    "car-red3": {
+    "car-red2": {
         spriteName: 'car_red_2.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
@@ -143,31 +131,25 @@ var collidableSprites = {
         rotation: false
     },
     "car-green": {
-        spriteName: 'car_green_5.png',
-        spriteSheet: 'vehicles',
-        scale: 0.8,
-        rotation: false
-    },
-    "car-green2": {
         spriteName: 'car_green_1.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
     },
-    "car-green3": {
+    "car-green2": {
         spriteName: 'car_green_2.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
     },
     "car-green4": {
-        spriteName: 'car_green_3.png',
+        spriteName: 'car_green_4.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
     },
     "car-green5": {
-        spriteName: 'car_green_4.png',
+        spriteName: 'car_green_5.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
@@ -180,12 +162,6 @@ var collidableSprites = {
     },
     "car-yellow2": {
         spriteName: 'car_yellow_2.png',
-        spriteSheet: 'vehicles',
-        scale: 0.8,
-        rotation: false
-    },
-    "car-yellow3": {
-        spriteName: 'car_yellow_3.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
@@ -208,7 +184,7 @@ var current_car_index = 0
 
 function addPlayer(playerID) {
 
-    console.log("Adding player " + playerID);
+    console.log("Adding player " + playerID + " with colour " + current_car_index);
 
     var offset = 100 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
