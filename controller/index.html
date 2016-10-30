@@ -51,6 +51,10 @@
             {
                 name: "squealing",
                 path: "assets/sound/",
+            },
+            {
+                name: "kaboom",
+                path: "assets/sound/",
             }
         ],
         volume: 1,
@@ -86,6 +90,7 @@
     socket.on('controllerRestart', function (msg) {
         document.getElementById('playText').style.display = "none"
         document.getElementById('restart').style.display = "block"
+        ion.sound.play('kaboom')
     })
 
     var button = document.getElementById('restart')
