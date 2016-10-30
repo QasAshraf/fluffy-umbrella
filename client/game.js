@@ -1,6 +1,20 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {preload: preload, create: create, update: update, render: render})
 var socket;
 
+ion.sound({
+    sounds: [
+        {
+            name: "bgmusic",
+            path: "assets/",
+        }
+    ],
+    volume: 1,
+    loop: true,
+    preload: true
+});
+
+var bgMusicPlaying = false;
+
 
 function addControlData(player, playerData)
 {
@@ -94,7 +108,7 @@ var collectibleSprites = {
         rotation: true,
         action: addBonusScore
     }
-    
+
 }
 var collidableSprites = {
     "motorbike-blue": {
@@ -262,28 +276,38 @@ function addPlayer(playerID) {
 
     players[playerID] = {}
     players[playerID].car = game.add.sprite(offset, game.world.height - 150, 'vehicles', cars[current_car_index])
+
+    var player = players[playerID].car
+
     current_car_index = current_car_index + 1;
     if(current_car_index > cars.length - 1){
         current_car_index = 0
     }
 
-    players[playerID].car.anchor.set(0.5);
-    players[playerID].car.scale.x = 0.9
-    players[playerID].car.scale.y = 0.9
-    players[playerID].car.score = 0
-    players[playerID].car.invincible = true
-    players[playerID].car.alpha = 0.3;
+    player.anchor.set(0.5);
+    player.scale.x = 0.9
+    player.scale.y = 0.9
+    player.score = 0
+    player.invincible = true
+    player.alpha = 0.3;
 
     game.time.events.add(Phaser.Timer.SECOND * 3, function () {
         if(typeof players[playerID].car != 'undefined') {
-            players[playerID].car.invincible = false
-            players[playerID].car.alpha = 1;
+            player.invincible = false
+            player.alpha = 1;
         }
     }, this);
 
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID].car)
-    players[playerID].car.body.collideWorldBounds = true
+    
+    if(!bgMusicPlaying) {
+        ion.sound.play("bgmusic");
+        bgMusicPlaying = true;
+    }
+
+    player.body.setSize(player.width - 25, player.height, 15);
+    player.body.collideWorldBounds = true
 }
 
 function create() {
@@ -342,7 +366,6 @@ function create() {
         }
         if(msg)
         {
-            //console.log('serverUserData: ' + JSON.stringify(msg));
             updateOrAddPlayerControl(msg);
         }
     });
@@ -441,7 +464,7 @@ function killPlayerIfCrashed(chosenPlayer) {
         explosions[player] = game.add.sprite(player.x, game.world.centerY + 20, 'kaboom');
         explosions[player].lifespan = 500
         explosions[player].x = player.x - (explosions[player].width / 2)
-        //game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
+
         updateLeaderBoard(player);
         chosenPlayer.textSprite.kill()
         player.kill()
@@ -519,7 +542,7 @@ function updatePlayer(chosenPlayer) {
 
     if (chosenPlayer.car.alive && typeof chosenPlayer.car.controlData != 'undefined') {
         chosenPlayer.car.body.velocity.x = chosenPlayer.car.controlData.accelY * 60;
-        chosenPlayer.car.angle = chosenPlayer.car.controlData.accelY / 1.2; // we have between -10 .. +10 acella data
+        chosenPlayer.car.angle = chosenPlayer.car.controlData.accelY; // we have between -10 .. +10 acella data
 
         // Maybe we are testing with arrow keys
         if (cursors.left.isDown) {
@@ -564,6 +587,8 @@ function render () {
             game.debug.text(players[playerID].car.controlData.name + ': ' + players[playerID].car.score, 32, y);
             count++;
         }
+
+        game.debug.body(players[playerID].car)
 
         y = y + 32;
     }
