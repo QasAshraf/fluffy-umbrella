@@ -374,10 +374,9 @@ function update() {
 }
 
 function render () {
-    game.debug.text('Number of players: ' + players.length, 32, 32)
     var y = 64;
     for (var playerID in players) {
-        game.debug.text('>> Player ' + playerID + ': ' + players[playerID].score, 32, y);
+        game.debug.text('>> ' + playerID + ': ' + players[playerID].score, 32, y);
         y = y + 32;
     }
 }
