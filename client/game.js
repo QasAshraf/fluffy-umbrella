@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update, render: render})
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {preload: preload, create: create, update: update, render: render})
 var socket;
 
 
@@ -276,7 +276,7 @@ function create() {
     socket.on('serverUserData', function (msg) {
         if(msg)
         {
-            console.log('serverUserData: ' + JSON.stringify(msg));
+            //console.log('serverUserData: ' + JSON.stringify(msg));
             updateOrAddPlayerControl(msg);
         }
     });
@@ -353,6 +353,45 @@ function cleanUpExplosion()
 
 var explosions = {}
 
+var leaderboard = {};
+
+function updateLeaderBoard(player) {
+
+    console.log("Try the leaderboard");
+    console.log(player);
+
+    //if(!player.name)
+    //    return;
+
+    if(typeof leaderboard[player.controlData.id] != "undefined")
+    {
+        // Already has a high score, compare
+        if(leaderboard[player.controlData.id].score < player.score) {
+            leaderboard[player.controlData.id].score = player.score;
+            leaderboard[player.controlData.id].name = player.controlData.name;
+        }
+    }
+    else {
+        // No Score yet, add it
+        leaderboard[player.controlData.id] = {};
+        leaderboard[player.controlData.id].score = player.score;
+        leaderboard[player.controlData.id].name = player.controlData.name;
+    }
+
+    var leadersString = "";
+    for (var playerID in leaderboard) {
+        if (leaderboard.hasOwnProperty(playerID)) {
+            leadersString += leaderboard[player.controlData.id].name + " : " + leaderboard[player.controlData.id].score + "</br>";
+        }
+    }
+
+    console.log(leadersString);
+
+    document.getElementById("high-scores").innerHTML = leadersString;
+}
+
+
+
 function updatePlayer(chosenPlayer) {
     game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
         if (!chosenPlayer.hasSentRestart) {
@@ -366,6 +405,8 @@ function updatePlayer(chosenPlayer) {
 
         explosions[player] = game.add.sprite(player.x, game.world.centerY, 'kaboom');
         game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
+        updateLeaderBoard(chosenPlayer);
+
         player.kill()
         player = null
     })
@@ -411,7 +452,7 @@ function render () {
     for (var playerID in players) {
 
         if(typeof players[playerID].controlData != 'undefined'){
-            game.debug.text('>> ' + players[playerID].controlData.name + ': ' + players[playerID].score, 32, y);
+            game.debug.text(players[playerID].controlData.name + ': ' + players[playerID].score, 32, y);
         }
 
         y = y + 32;
