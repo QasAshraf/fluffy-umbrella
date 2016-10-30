@@ -8,10 +8,12 @@ function addControlData(player, playerData)
 }
 
 function addPlayerText(player) {
-    var styles = {
-
+    var style = {
+        fill: '#fff',
+        align: 'center'
     }
-    player.textSprite = game.add.text(player.car.body.x, player.car.body.y + 120, player.car.controlData.name)
+
+    player.textSprite = game.add.text(player.car.body.x, player.car.body.y + 120, player.car.controlData.name, style)
 }
 
 function updateOrAddPlayerControl(playerData)
@@ -401,8 +403,10 @@ function killPlayerIfCrashed(chosenPlayer) {
 
         explosion.play();
 
-        explosions[player] = game.add.sprite(player.x, game.world.centerY, 'kaboom');
-        game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
+        explosions[player] = game.add.sprite(player.x, game.world.centerY + 20, 'kaboom');
+        explosions[player].lifespan = 500
+        explosions[player].x = player.x - (explosions[player].width / 2)
+        //game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
         updateLeaderBoard(player);
         chosenPlayer.textSprite.kill()
         player.kill()
@@ -482,6 +486,9 @@ function updatePlayer(chosenPlayer) {
 }
 
 function update() {
+    Object.keys(explosions).forEach(function (explosion) {
+        explosions[explosion].alpha -= 0.1
+    })
 
     lanes.forEach(function (lane) {
         lane.laneSprite.y += 8 //speed of road
