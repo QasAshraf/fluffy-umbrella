@@ -25,11 +25,21 @@
     margin-top: 150px;"></div>
 </div>
 
+<div class="row">
+    <div class="small-12">
+        <input type="text" id="name_input" name="name">
+    </div>
+</div>
+
 <script src="/socket.io.js"></script>
 <script src="/NoSleep.min.js"></script>
 <script>
     var socket = io();
     var lastData;
+
+    function username(){
+        return document.getElementById('name_input').value;
+    }
 
     socket.on('serverBroadcast', function(msg){
         console.log(msg);
@@ -38,7 +48,7 @@
     socket.on('ping', function (msg) {
         var lastData = {
             "id" : socket.id,
-            "name" : "Dave"
+            "name" : username()
         };
 
         console.log(socket.id)
@@ -74,7 +84,7 @@
 
         lastData = {
             "id": socket.id,
-            "name": "Dave",
+            "name": username(),
             "accelX": event.accelerationIncludingGravity.x,
             "accelY": event.accelerationIncludingGravity.y,
             "accelZ": event.accelerationIncludingGravity.z,
@@ -85,7 +95,7 @@
         if(dir == 'left') {
             lastData = {
                 "id": socket.id,
-                "name": "Dave",
+                "name": username(),
                 "accelX": 0,
                 "accelY": -10,
                 "accelZ": 0,
@@ -93,7 +103,7 @@
         } else if (dir == 'right') {
             lastData = {
                 "id": socket.id,
-                "name": "Dave",
+                "name": username(),
                 "accelX": 0,
                 "accelY": 10,
                 "accelZ": 0,
@@ -101,14 +111,12 @@
         } else {
             lastData = {
                 "id": socket.id,
-                "name": "Dave",
+                "name": username(),
                 "accelX": 0,
                 "accelY": 0,
                 "accelZ": 0,
             }
         }
-
-
     }
 
     $(document).keydown(function(e) {
@@ -117,14 +125,8 @@
                 sendSpoofMotion('left')
                 break;
 
-            case 38: // up
-                break;
-
             case 39: // right
                 sendSpoofMotion('right')
-                break;
-
-            case 40: // down
                 break;
 
             default: return; // exit this handler for other keys
@@ -138,14 +140,8 @@
                 sendSpoofMotion('none')
                 break;
 
-            case 38: // up
-                break;
-
             case 39: // right
                 sendSpoofMotion('none')
-                break;
-
-            case 40: // down
                 break;
 
             default: return; // exit this handler for other keys

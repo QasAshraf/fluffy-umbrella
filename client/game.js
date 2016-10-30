@@ -226,9 +226,9 @@ function addPlayer(playerID) {
     players[playerID].scale.x = 0.9
     players[playerID].scale.y = 0.9
     players[playerID].score = 0
-
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID])
+    players[playerID].body.collideWorldBounds = true
 }
 
 function create() {
@@ -409,7 +409,11 @@ function update() {
 function render () {
     var y = 64;
     for (var playerID in players) {
-        game.debug.text('>> ' + playerID + ': ' + players[playerID].score, 32, y);
+
+        if(typeof players[playerID].controlData != 'undefined'){
+            game.debug.text('>> ' + players[playerID].controlData.name + ': ' + players[playerID].score, 32, y);
+        }
+
         y = y + 32;
     }
 }
