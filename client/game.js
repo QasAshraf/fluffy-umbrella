@@ -62,6 +62,11 @@ function preload() {
         'assets/sprites/spritesheet_vehicles.png',
         'assets/sprites/spritesheet_vehicles.xml'
     )
+    game.load.atlasXML(
+        'objects',
+        'assets/sprites/spritesheet_objects.png',
+        'assets/sprites/spritesheet_objects.xml'
+    )
 
     // Explosions!
     game.load.image('kaboom', 'assets/explosion.png', 64, 64);
@@ -84,8 +89,25 @@ var player
 var players = {}
 var cursors
 var collidables
+var collectibles
 var NUMBER_OF_LANES = 6
 var lanes = []
+
+var collectibleSprites = {
+    "cone": {
+        spriteName: 'cone_down.png',
+        spriteSheet: 'objects',
+        scale: 0.6,
+        rotation: true
+    },
+    "cone2": {
+        spriteName: 'cone_straight.png',
+        spriteSheet: 'objects',
+        scale: 0.6,
+        rotation: true
+    }
+    
+}
 var collidableSprites = {
     "motorbike-blue": {
         spriteName: 'motorcycle_blue.png',
@@ -308,6 +330,7 @@ function create() {
     explosion = game.add.audio('explosion');
 
     collidables = game.add.physicsGroup()
+    collectibles = game.add.physicsGroup()
 
     // Timer
     timer = game.time.create(false);
@@ -369,33 +392,36 @@ function pickLane(lanes) {
     })
 }
 
-function pickRandomCollidable() {
-    var collidableSize = Object.keys(collidableSprites).length
-    var collidableName = Object.keys(collidableSprites)[Math.floor(Math.random() * collidableSize)]
-    return collidableSprites[collidableName]
+function pickRandomMovingSprite(spriteList) {
+    var spriteListSize = Object.keys(spriteList).length
+    var spriteName = Object.keys(spriteList)[Math.floor(Math.random() * spriteListSize)]
+    return spriteList[spriteName]
 }
 
-function makeCollidable(lane) {
+function makeMovingSprite(lane, isCollectible) {
     var difference = lane.end - lane.start
-    var collidableLocation = lane.start + Math.floor(Math.random() * difference)
-    var randomCollidable = pickRandomCollidable()
+    var location = lane.start + Math.floor(Math.random() * difference)
+    var spriteResourceList = isCollectible ? collectibleSprites: collidableSprites;
+    var spriteList = isCollectible ? collectibles: collidables;
+    var randomSprite = pickRandomMovingSprite(spriteResourceList)
 
-    if (randomCollidable.spriteSheet) {
-        var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteSheet, randomCollidable.spriteName)
+    var sprite;
+    if (randomSprite.spriteSheet) {
+        sprite = spriteList.create(location, 0, randomSprite.spriteSheet, randomSprite.spriteName)
     } else {
-        var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
+        sprite = spriteList.create(location, 0, randomSprite.spriteName)
     }
 
     lane.items += 1
-    collidable.lane = lane
-    collidable.anchor.x = 0.5
-    collidable.anchor.y = 0.5
-    collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
-    collidable.body.velocity.y = Math.random() * (100) + 300;
-    collidable.body.immovable = false
-    collidable.checkWorldBounds = true
-    collidable.rotation = randomCollidable.rotation ? Math.random(0, 360) : 0
-    collidable.events.onOutOfBounds.add(getRidOfSprite, this)
+    sprite.lane = lane
+    sprite.anchor.x = 0.5
+    sprite.anchor.y = 0.5
+    sprite.scale.set(randomSprite.scale, randomSprite.scale)
+    sprite.body.velocity.y = Math.random() * (100) + 300;
+    sprite.body.immovable = false
+    sprite.checkWorldBounds = true
+    sprite.rotation = randomSprite.rotation ? Math.random(0, 360) : 0
+    sprite.events.onOutOfBounds.add(getRidOfSprite, this)
 }
 
 function getRidOfSprite(sprite) {
@@ -472,16 +498,35 @@ function updateLeaderBoard(player) {
     document.getElementById("high-scores").innerHTML = leadersString;
 }
 
+function collectCollectible(chosenPlayer) {
+    game.physics.arcade.collide(chosenPlayer.car, collectibles, function (player, collectible) {
+        if(player.alive)
+        {
+            collectible.destroy()
+            player.score += Math.round(Math.random() * (48) + 2); // 2 - 50
+        }
+    })
+
+}
+
 function updatePlayer(chosenPlayer) {
     if (!chosenPlayer.car.invincible) {
         killPlayerIfCrashed(chosenPlayer);
+        collectCollectible(chosenPlayer);
     }
 
     var chance = Math.random()
     var maxcollidables = NUMBER_OF_LANES * 2
     if (chance >= 0.97 && collidables.children.length < maxcollidables) {
         var lane = pickLane(lanes)
-        makeCollidable(lane)
+        makeMovingSprite(lane, false)
+    }
+
+    //re-roll the dice
+    chance = Math.random()
+    if (chance >= 0.99) {
+        var lane = pickLane(lanes)
+        makeMovingSprite(lane, true)
     }
 
     if (chosenPlayer.car.alive && typeof chosenPlayer.car.controlData != 'undefined') {
