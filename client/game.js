@@ -85,16 +85,24 @@ var collidableSprites = {
     }
 }
 
+var current_car_index = 0
+
 function addPlayer(playerID) {
 
     var offset = 100 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
-    players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', 'car_black_3.png');
+    var cars = ['car_black_3.png','car_blue_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
+
+    players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', cars[current_car_index])
+    current_car_index = current_car_index + 1;
+    if(current_car_index > cars.length - 1){
+        current_car_index = 0
+    }
     players[playerID].scale.x = 0.9
     players[playerID].scale.y = 0.9
 
     //  We need to enable physics on the players
-    game.physics.arcade.enable(players[playerID]);
+    game.physics.arcade.enable(players[playerID])
 }
 
 function create() {
