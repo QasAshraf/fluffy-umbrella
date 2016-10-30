@@ -230,8 +230,11 @@ function addPlayer(playerID) {
     players[playerID].alpha = 0.3;
 
     game.time.events.add(Phaser.Timer.SECOND * 3, function () {
-        players[playerID].invincible = false
-        players[playerID].alpha = 1;
+        if(typeof players[playerID] != 'undefined') {
+            players[playerID].invincible = false
+            players[playerID].alpha = 1;
+        }
+
     }, this);
 
     //  We need to enable physics on the players
