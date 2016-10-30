@@ -226,6 +226,14 @@ function addPlayer(playerID) {
     players[playerID].scale.x = 0.9
     players[playerID].scale.y = 0.9
     players[playerID].score = 0
+    players[playerID].invincible = true
+    players[playerID].alpha = 0.3;
+
+    game.time.events.add(Phaser.Timer.SECOND * 3, function () {
+        players[playerID].invincible = false
+        players[playerID].alpha = 1;
+    }, this);
+
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID])
     players[playerID].body.collideWorldBounds = true
@@ -247,6 +255,13 @@ function create() {
         laneSprite.scale.y = 2.5
         lane.laneSprite = laneSprite
     })
+
+    var style = { font: "60px Arial", fill: "#ffffff", align: "center" };
+    var text = game.add.text(game.world.centerX, game.world.centerY, "M60 Mayhem\nConnect a controller to start", style);
+    text.anchor.set(0.5);
+    text.alpha = 0.1;
+
+    game.add.tween(text).to( { alpha: 1 }, 2000, "Linear", true);
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE)
@@ -274,6 +289,9 @@ function create() {
     });
 
     socket.on('serverUserData', function (msg) {
+        if (text != undefined) {
+            text.destroy()
+        }
         if(msg)
         {
             //console.log('serverUserData: ' + JSON.stringify(msg));
@@ -294,7 +312,7 @@ function create() {
 function updateScores() {
     for (var playerID in players) {
         var player = players[playerID];
-        if(player.alive)
+        if(player.alive && !player.invincible)
         {
             player.score++
             console.log("Player " + playerID + " has score of " + player.score)
@@ -353,6 +371,25 @@ function cleanUpExplosion()
 
 var explosions = {}
 
+function killPlayerIfCrashed(chosenPlayer) {
+    game.physics.arcade.collide(chosenPlayer, collidables, function (player) {
+        if (!chosenPlayer.hasSentRestart) {
+            // Have to trigger an event here to pull this out into the event loop
+            var event = new CustomEvent("restartPlayer", {"detail": chosenPlayer.controlData})
+            document.dispatchEvent(event)
+            chosenPlayer.hasSentRestart = true
+        }
+
+        explosion.play();
+
+        explosions[player] = game.add.sprite(player.x, game.world.centerY, 'kaboom');
+        game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
+        updateLeaderBoard(chosenPlayer);
+        player.kill()
+        player = null
+    })
+}
+
 var leaderboard = {};
 
 function updateLeaderBoard(player) {
@@ -390,26 +427,10 @@ function updateLeaderBoard(player) {
     document.getElementById("high-scores").innerHTML = leadersString;
 }
 
-
-
 function updatePlayer(chosenPlayer) {
-    game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
-        if (!chosenPlayer.hasSentRestart) {
-            // Have to trigger an event here to pull this out into the event loop
-            var event = new CustomEvent("restartPlayer", {"detail": chosenPlayer.controlData})
-            document.dispatchEvent(event)
-            chosenPlayer.hasSentRestart = true
-        }
-
-        explosion.play();
-
-        explosions[player] = game.add.sprite(player.x, game.world.centerY, 'kaboom');
-        game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
-        updateLeaderBoard(chosenPlayer);
-
-        player.kill()
-        player = null
-    })
+    if (!chosenPlayer.invincible) {
+        killPlayerIfCrashed(chosenPlayer);
+    }
 
     var chance = Math.random()
     var maxcollidables = NUMBER_OF_LANES * 2
