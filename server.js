@@ -21,13 +21,17 @@ io.on('connection', function(socket){
     console.log('a user connected');
 
     socket.on('disconnect', function(){
-        console.log('user disconnected');
+        console.log('user ' + this.id + ' disconnected');
+        io.emit('serverUserDisconnect', this.id);
     });
 
     socket.on('controllerData', function(data){
         console.log('controllerData: ' + JSON.stringify(data, null, 4));
 
         //Lets forward on this data to the client game view
-        io.emit('serverUserData', data);
+        if(data)
+        {
+            io.emit('serverUserData', data);
+        }
     });
 });

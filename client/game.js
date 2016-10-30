@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update})
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update, render: render})
 
 function addControlData(player, playerData)
 {
@@ -7,6 +7,11 @@ function addControlData(player, playerData)
 
 function update_add_player_control(playerData)
 {
+    if(!playerData)
+    {
+        return;
+    }
+
     if (players.hasOwnProperty(playerData.id)) {
         addControlData(players[playerData.id], playerData);
         return;
@@ -21,7 +26,6 @@ function update_add_player_control(playerData)
 
 function preload() {
     game.load.image('road', 'assets/road.png')
-    game.load.image('sky', 'assets/sky.png')
     game.load.image('box', 'assets/box.png')
     game.load.atlasXML(
         'vehicles',
@@ -39,6 +43,7 @@ function preload() {
     game.scale.pageAlignHorizontally = true;
 }
 
+var timer;
 var explosion
 var player
 var players = {}
@@ -65,8 +70,44 @@ var collidableSprites = {
         scale: 0.6,
         rotation: false
     },
+    "motorbike-black": {
+        spriteName: 'motorcycle_black.png',
+        spriteSheet: 'vehicles',
+        scale: 0.6,
+        rotation: false
+    },
+    "motorbike-yellow": {
+        spriteName: 'motorcycle_yellow.png',
+        spriteSheet: 'vehicles',
+        scale: 0.6,
+        rotation: false
+    },
     "car-blue": {
         spriteName: 'car_blue_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-blue2": {
+        spriteName: 'car_blue_2.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-blue3": {
+        spriteName: 'car_blue_3.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-blue4": {
+        spriteName: 'car_blue_4.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-blue5": {
+        spriteName: 'car_blue_5.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
@@ -77,8 +118,86 @@ var collidableSprites = {
         scale: 0.8,
         rotation: false
     },
+    "car-red2": {
+        spriteName: 'car_red_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-red3": {
+        spriteName: 'car_red_2.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-red4": {
+        spriteName: 'car_red_4.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-red5": {
+        spriteName: 'car_red_5.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
     "car-green": {
         spriteName: 'car_green_5.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green2": {
+        spriteName: 'car_green_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green3": {
+        spriteName: 'car_green_2.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green4": {
+        spriteName: 'car_green_3.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green5": {
+        spriteName: 'car_green_4.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow": {
+        spriteName: 'car_yellow_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow2": {
+        spriteName: 'car_yellow_2.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow3": {
+        spriteName: 'car_yellow_3.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow4": {
+        spriteName: 'car_yellow_4.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow5": {
+        spriteName: 'car_yellow_5.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
@@ -88,6 +207,8 @@ var collidableSprites = {
 var current_car_index = 0
 
 function addPlayer(playerID) {
+
+    console.log("Adding player " + playerID);
 
     var offset = 100 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
@@ -100,6 +221,7 @@ function addPlayer(playerID) {
     }
     players[playerID].scale.x = 0.9
     players[playerID].scale.y = 0.9
+    players[playerID].score = 0
 
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID])
@@ -130,15 +252,42 @@ function create() {
 
     collidables = game.add.physicsGroup()
 
+    // Timer
+    timer = game.time.create(false);
+    timer.loop(1000, updateScores, this); // 1s timer calls updateScores
+    timer.start();
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
 
     var socket = io();
     socket.on('serverUserData', function (msg) {
-        console.log(msg);
-        update_add_player_control(msg);
+        if(msg)
+        {
+            console.log('serverUserData: ' + JSON.stringify(msg));
+            update_add_player_control(msg);
+        }
     });
+
+    socket.on('serverUserDisconnect', function(id){
+        console.log('Cleanup player ' + id);
+        if(players[id])
+        {
+            getRidOfSprite(players[id]);
+            delete players[id];
+        }
+    })
+}
+
+function updateScores() {
+    for (var playerID in players) {
+        var player = players[playerID];
+        if(player.alive)
+        {
+            player.score++
+            console.log("Player " + playerID + " has score of " + player.score)
+        }
+    }
 }
 
 function pickLane(lanes) {
@@ -239,5 +388,13 @@ function update() {
         if (players.hasOwnProperty(playerID)) {
             updatePlayer(players[playerID])
         }
+    }
+}
+
+function render () {
+    var y = 64;
+    for (var playerID in players) {
+        game.debug.text('>> ' + playerID + ': ' + players[playerID].score, 32, y);
+        y = y + 32;
     }
 }
