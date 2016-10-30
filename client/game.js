@@ -346,10 +346,12 @@ function getRidOfSprite(sprite) {
     sprite.destroy()
 }
 
-function fadeExplosion() {
-    game.add.tween(explosion).to({ alpha: 0 }, 2000, Phaser.Easing.Elastic.In, true);
-    explosion.kill()
+function cleanUpExplosion()
+{
+    explosions[this].destroy();
 }
+
+var explosions = {}
 
 function updatePlayer(chosenPlayer) {
     game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
@@ -361,8 +363,9 @@ function updatePlayer(chosenPlayer) {
         }
 
         explosion.play();
-        explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
-        game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
+
+        explosions[player] = game.add.sprite(player.x, game.world.centerY, 'kaboom');
+        game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
         player.kill()
         player = null
     })
