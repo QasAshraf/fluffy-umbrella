@@ -430,9 +430,9 @@ function create() {
     });
 
     socket.on('serverUserData', function (msg) {
-        //if (text != undefined) {
+        if (typeof text != "undefined") {
             text.destroy()
-        //}
+        }
         if(msg)
         {
             updateOrAddPlayerControl(msg);
