@@ -467,19 +467,16 @@ function updatePlayer(chosenPlayer) {
 
     if (chosenPlayer.car.alive && typeof chosenPlayer.car.controlData != 'undefined') {
         chosenPlayer.car.body.velocity.x = chosenPlayer.car.controlData.accelY * 60;
-        chosenPlayer.car.angle = chosenPlayer.car.controlData.accelY / 2; // we have between -10 .. +10 acella data
+        chosenPlayer.car.angle = chosenPlayer.car.controlData.accelY / 1.2; // we have between -10 .. +10 acella data
 
         // Maybe we are testing with arrow keys
         if (cursors.left.isDown) {
             chosenPlayer.car.body.velocity.x = -300
-            chosenPlayer.car.angle = -6;
         } else if (cursors.right.isDown) {
             chosenPlayer.car.body.velocity.x = 300
-            chosenPlayer.car.angle = 6;
 
         } else {
             chosenPlayer.car.animations.stop()
-            //chosenPlayer.car.rotation = 0;
         }
     }
 
