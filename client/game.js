@@ -65,8 +65,44 @@ var collidableSprites = {
         scale: 0.6,
         rotation: false
     },
+    "motorbike-black": {
+        spriteName: 'motorcycle_black.png',
+        spriteSheet: 'vehicles',
+        scale: 0.6,
+        rotation: false
+    },
+    "motorbike-yellow": {
+        spriteName: 'motorcycle_yellow.png',
+        spriteSheet: 'vehicles',
+        scale: 0.6,
+        rotation: false
+    },
     "car-blue": {
         spriteName: 'car_blue_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-blue2": {
+        spriteName: 'car_blue_2.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-blue3": {
+        spriteName: 'car_blue_3.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-blue4": {
+        spriteName: 'car_blue_4.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-blue5": {
+        spriteName: 'car_blue_5.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
@@ -77,8 +113,86 @@ var collidableSprites = {
         scale: 0.8,
         rotation: false
     },
+    "car-red2": {
+        spriteName: 'car_red_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-red3": {
+        spriteName: 'car_red_2.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-red4": {
+        spriteName: 'car_red_4.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-red5": {
+        spriteName: 'car_red_5.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
     "car-green": {
         spriteName: 'car_green_5.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green2": {
+        spriteName: 'car_green_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green3": {
+        spriteName: 'car_green_2.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green4": {
+        spriteName: 'car_green_3.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green5": {
+        spriteName: 'car_green_4.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow": {
+        spriteName: 'car_yellow_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow2": {
+        spriteName: 'car_yellow_2.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow3": {
+        spriteName: 'car_yellow_3.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow4": {
+        spriteName: 'car_yellow_4.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow5": {
+        spriteName: 'car_yellow_5.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
