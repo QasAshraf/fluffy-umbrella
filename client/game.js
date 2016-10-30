@@ -372,7 +372,7 @@ function killPlayerIfCrashed(chosenPlayer) {
 
         explosion.play();
         explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
-        game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, explosion);
+        game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
         player.kill()
         player = null
     })
