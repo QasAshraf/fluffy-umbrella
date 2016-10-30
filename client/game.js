@@ -1,4 +1,6 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update, render: render})
+var socket;
+
 
 function addControlData(player, playerData)
 {
@@ -214,7 +216,7 @@ function addPlayer(playerID) {
 
     var offset = 150 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
-    var cars = ['car_black_3.png','car_blue.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
+    var cars = ['car_black_3.png','car_blue_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
 
     players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', cars[current_car_index])
     current_car_index = current_car_index + 1;
@@ -262,7 +264,7 @@ function create() {
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
 
-    var socket = io();
+    socket = io();
 
     socket.on('restartPlayer', function(playerId) {
         console.log('playerId', playerId)
