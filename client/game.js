@@ -54,6 +54,21 @@ function updateOrAddPlayerControl(playerData)
     addPlayer(playerData.id);
 }
 
+//  The Google WebFont Loader will look for this object, so create it before loading the script.
+WebFontConfig = {
+
+    //  'active' means all requested fonts have finished loading
+    //  We set a 1 second delay before calling 'createText'.
+    //  For some reason if we don't the browser cannot render the text the first time it's created.
+    active: function() { game.time.events.add(Phaser.Timer.SECOND, createText, this); },
+
+    //  The Google Fonts we want to load (specify as many as you like in the array)
+    google: {
+        families: ['Coiny']
+    }
+
+};
+
 function preload() {
     game.load.image('road', 'assets/road.png')
     game.load.image('box', 'assets/box.png')
@@ -67,6 +82,9 @@ function preload() {
         'assets/sprites/spritesheet_objects.png',
         'assets/sprites/spritesheet_objects.xml'
     )
+
+    //  Load the Google WebFont Loader script
+    game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
     // Explosions!
     game.load.image('kaboom', 'assets/explosion.png', 64, 64);
@@ -310,6 +328,29 @@ function addPlayer(playerID) {
     player.body.collideWorldBounds = true
 }
 
+function createText() {
+
+    text = game.add.text(game.world.centerX, game.world.centerY, "- M60 Mayhem -\nconnect a controller\n to start");
+    text.anchor.setTo(0.5);
+
+    text.font = 'Coiny';
+    text.fontSize = 60;
+
+    //  x0, y0 - x1, y1
+    grd = text.context.createLinearGradient(0, 0, 0, text.canvas.height);
+    grd.addColorStop(0, '#8ED6FF');
+    grd.addColorStop(1, '#004CB3');
+    text.fill = grd;
+
+    text.align = 'center';
+    text.stroke = '#000000';
+    text.strokeThickness = 2;
+    text.setShadow(5, 5, 'rgba(0,0,0,0.5)', 5);
+
+    game.add.tween(text).to( { alpha: 1 }, 2000, "Linear", true);
+}
+
+
 function create() {
     var divisor = game.world.width / NUMBER_OF_LANES
     for (var i = 0; i < game.world.width; i += divisor) {
@@ -326,13 +367,6 @@ function create() {
         laneSprite.scale.y = 2.5
         lane.laneSprite = laneSprite
     })
-
-    var style = { font: "60px Arial", fill: "#ffffff", align: "center" };
-    var text = game.add.text(game.world.centerX, game.world.centerY, "M60 Mayhem\nConnect a controller to start", style);
-    text.anchor.set(0.5);
-    text.alpha = 0.1;
-
-    game.add.tween(text).to( { alpha: 1 }, 2000, "Linear", true);
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE)
