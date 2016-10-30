@@ -1,6 +1,20 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {preload: preload, create: create, update: update, render: render})
 var socket;
 
+ion.sound({
+    sounds: [
+        {
+            name: "bgmusic",
+            path: "assets/",
+        }
+    ],
+    volume: 1,
+    loop: true,
+    preload: true
+});
+
+var bgMusicPlaying = false;
+
 
 function addControlData(player, playerData)
 {
@@ -256,6 +270,11 @@ function addPlayer(playerID) {
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID].car)
     players[playerID].car.body.collideWorldBounds = true
+
+    if(!bgMusicPlaying) {
+        ion.sound.play("bgmusic");
+        bgMusicPlaying = true;
+    }
 }
 
 function create() {
@@ -467,7 +486,7 @@ function updatePlayer(chosenPlayer) {
 
     if (chosenPlayer.car.alive && typeof chosenPlayer.car.controlData != 'undefined') {
         chosenPlayer.car.body.velocity.x = chosenPlayer.car.controlData.accelY * 60;
-        chosenPlayer.car.angle = chosenPlayer.car.controlData.accelY / 1.2; // we have between -10 .. +10 acella data
+        chosenPlayer.car.angle = chosenPlayer.car.controlData.accelY; // we have between -10 .. +10 acella data
 
         // Maybe we are testing with arrow keys
         if (cursors.left.isDown) {
