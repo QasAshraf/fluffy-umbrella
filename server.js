@@ -18,8 +18,8 @@ http.listen(8080, function () {
 });
 
 io.on('connection', function(socket){
-    console.log('a user connected');
-
+    console.log(`user ${socket.id} connected`);
+    socket.emit('ping')
     socket.on('disconnect', function(){
         console.log('user ' + this.id + ' disconnected');
         io.emit('serverUserDisconnect', this.id);

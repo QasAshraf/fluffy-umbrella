@@ -48,7 +48,6 @@ function preload() {
 var timer;
 // Add an event listener
 document.addEventListener("restartPlayer", function(e) {
-    console.log(e.detail)
     socket.emit('clientRestart', e.detail)
 });
 var explosion
@@ -244,13 +243,16 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys()
 
     socket.on('restartPlayer', function(playerId) {
+        console.log('playerId', playerId)
+        console.log('players', players)
         delete players[playerId]
+        console.log('players', players)
     });
 
     socket.on('serverUserData', function (msg) {
         if(msg)
         {
-            console.log('serverUserData: ' + JSON.stringify(msg));
+            //console.log('serverUserData: ' + JSON.stringify(msg));
             update_add_player_control(msg);
         }
     });
