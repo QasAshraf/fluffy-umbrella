@@ -7,6 +7,11 @@ function addControlData(player, playerData)
 
 function update_add_player_control(playerData)
 {
+    if(!playerData)
+    {
+        return;
+    }
+
     if (players.hasOwnProperty(playerData.id)) {
         addControlData(players[playerData.id], playerData);
         return;
