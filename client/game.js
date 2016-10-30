@@ -84,13 +84,15 @@ var collectibleSprites = {
         spriteName: 'cone_down.png',
         spriteSheet: 'objects',
         scale: 0.6,
-        rotation: true
+        rotation: true,
+        action: addBonusScore
     },
     "cone2": {
         spriteName: 'cone_straight.png',
         spriteSheet: 'objects',
         scale: 0.6,
-        rotation: true
+        rotation: true,
+        action: addBonusScore
     }
     
 }
@@ -242,6 +244,10 @@ var collidableSprites = {
 }
 
 var current_car_index = 0
+
+function addBonusScore(player, collectible) {
+    player.score += Math.round(Math.random() * (48) + 2); // 2 - 50
+}
 
 function addPlayer(playerID) {
 
@@ -403,6 +409,7 @@ function makeMovingSprite(lane, isCollectible) {
     sprite.checkWorldBounds = true
     sprite.rotation = randomSprite.rotation ? Math.random(0, 360) : 0
     sprite.events.onOutOfBounds.add(getRidOfSprite, this)
+    sprite.colisionAction = randomSprite.action
 }
 
 function getRidOfSprite(sprite) {
@@ -484,10 +491,10 @@ function collectCollectible(chosenPlayer) {
         if(player.alive)
         {
             collectible.destroy()
-            player.score += Math.round(Math.random() * (48) + 2); // 2 - 50
+            collectible.colisionAction(player, collectible)
         }
+        return false; //make sure pushing doesnt happen
     })
-
 }
 
 function updatePlayer(chosenPlayer) {
