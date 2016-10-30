@@ -21,7 +21,6 @@ function update_add_player_control(playerData)
 
 function preload() {
     game.load.image('road', 'assets/road.png')
-    game.load.image('sky', 'assets/sky.png')
     game.load.image('box', 'assets/box.png')
     game.load.atlasXML(
         'vehicles',
