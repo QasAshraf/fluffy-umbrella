@@ -406,7 +406,11 @@ function update() {
 function render () {
     var y = 64;
     for (var playerID in players) {
-        game.debug.text('>> ' + playerID + ': ' + players[playerID].score, 32, y);
+
+        if(typeof players[playerID].controlData != 'undefined'){
+            game.debug.text('>> ' + players[playerID].controlData.name + ': ' + players[playerID].score, 32, y);
+        }
+
         y = y + 32;
     }
 }
