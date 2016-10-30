@@ -417,7 +417,7 @@ function updateLeaderBoard(player) {
     console.log("Try the leaderboard");
     console.log(player);
 
-    if(!player.controlData.name)
+    if(!player.controlData && !player.controlData.name)
         return;
 
     if(typeof leaderboard[player.controlData.id] != "undefined")
@@ -501,7 +501,7 @@ function render () {
     count = 0;
     for (var playerID in players) {
         if(typeof players[playerID].car.controlData != 'undefined'){
-            game.debug.text(players[playerID].controlData.name + ': ' + players[playerID].score, 32, y);
+            game.debug.text(players[playerID].car.controlData.name + ': ' + players[playerID].score, 32, y);
             count++;
         }
 
