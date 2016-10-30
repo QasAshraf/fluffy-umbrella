@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update})
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update, render: render})
 
 function addControlData(player, playerData)
 {
@@ -39,6 +39,7 @@ function preload() {
     game.scale.pageAlignHorizontally = true;
 }
 
+var timer;
 var explosion
 var player
 var players = {}
@@ -214,6 +215,7 @@ function addPlayer(playerID) {
     }
     players[playerID].scale.x = 0.9
     players[playerID].scale.y = 0.9
+    players[playerID].score = 0
 
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID])
@@ -244,6 +246,10 @@ function create() {
 
     collidables = game.add.physicsGroup()
 
+    // Timer
+    timer = game.time.create(false);
+    timer.loop(1000, updateScores, this); // 1s timer calls updateScores
+    timer.start();
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
@@ -253,6 +259,17 @@ function create() {
         console.log(msg);
         update_add_player_control(msg);
     });
+}
+
+function updateScores() {
+    for (var playerID in players) {
+        var player = players[playerID];
+        if(player.alive)
+        {
+            player.score++
+            console.log("Player " + playerID + " has score of " + player.score)
+        }
+    }
 }
 
 function pickLane(lanes) {
@@ -353,5 +370,14 @@ function update() {
         if (players.hasOwnProperty(playerID)) {
             updatePlayer(players[playerID])
         }
+    }
+}
+
+function render () {
+    game.debug.text('Number of players: ' + players.length, 32, 32)
+    var y = 64;
+    for (var playerID in players) {
+        game.debug.text('>> Player ' + playerID + ': ' + players[playerID].score, 32, y);
+        y = y + 32;
     }
 }
