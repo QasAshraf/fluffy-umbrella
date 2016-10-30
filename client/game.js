@@ -343,7 +343,7 @@ function addPlayer(playerID) {
     player.alpha = 0.3;
 
     game.time.events.add(Phaser.Timer.SECOND * 3, function () {
-        if(typeof players[playerID].car != 'undefined') {
+        if(players[playerID] && typeof players[playerID].car != 'undefined') {
             player.invincible = false
             player.alpha = 1;
         }
