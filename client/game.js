@@ -7,6 +7,13 @@ function addControlData(player, playerData)
     player.controlData = playerData;
 }
 
+function addPlayerText(player) {
+    var styles = {
+
+    }
+    player.textSprite = game.add.text(player.car.body.x, player.car.body.y + 120, player.car.controlData.name)
+}
+
 function updateOrAddPlayerControl(playerData)
 {
     if(!playerData)
@@ -16,7 +23,12 @@ function updateOrAddPlayerControl(playerData)
 
     // Do we have an existing player, if so add the controller data
     if (players.hasOwnProperty(playerData.id)) {
-        addControlData(players[playerData.id], playerData);
+        addControlData(players[playerData.id].car, playerData);
+
+        if (!players[playerData.id].textSprite) {
+            addPlayerText(players[playerData.id])
+        }
+
         return;
     }
 
@@ -218,28 +230,28 @@ function addPlayer(playerID) {
 
     var cars = ['car_black_3.png','car_blue_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
 
-    players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', cars[current_car_index])
+    players[playerID] = {}
+    players[playerID].car = game.add.sprite(offset, game.world.height - 150, 'vehicles', cars[current_car_index])
     current_car_index = current_car_index + 1;
     if(current_car_index > cars.length - 1){
         current_car_index = 0
     }
-    players[playerID].scale.x = 0.9
-    players[playerID].scale.y = 0.9
-    players[playerID].score = 0
-    players[playerID].invincible = true
-    players[playerID].alpha = 0.3;
+    players[playerID].car.scale.x = 0.9
+    players[playerID].car.scale.y = 0.9
+    players[playerID].car.score = 0
+    players[playerID].car.invincible = true
+    players[playerID].car.alpha = 0.3;
 
     game.time.events.add(Phaser.Timer.SECOND * 3, function () {
-        if(typeof players[playerID] != 'undefined') {
-            players[playerID].invincible = false
-            players[playerID].alpha = 1;
+        if(typeof players[playerID].car != 'undefined') {
+            players[playerID].car.invincible = false
+            players[playerID].car.alpha = 1;
         }
-
     }, this);
 
     //  We need to enable physics on the players
-    game.physics.arcade.enable(players[playerID])
-    players[playerID].body.collideWorldBounds = true
+    game.physics.arcade.enable(players[playerID].car)
+    players[playerID].car.body.collideWorldBounds = true
 }
 
 function create() {
@@ -306,7 +318,7 @@ function create() {
         console.log('Cleanup player ' + id);
         if(players[id])
         {
-            getRidOfSprite(players[id]);
+            getRidOfSprite(players[id].car);
             delete players[id];
         }
     })
@@ -319,7 +331,7 @@ function clearDebugText()
 
 function updateScores() {
     for (var playerID in players) {
-        var player = players[playerID];
+        var player = players[playerID].car;
         if(player.alive && !player.invincible)
         {
             player.score++
@@ -351,7 +363,6 @@ function makeCollidable(lane) {
         var collidable = collidables.create(collidableLocation, 0, randomCollidable.spriteName)
     }
 
-
     lane.items += 1
     collidable.lane = lane
     collidable.anchor.x = 0.5
@@ -380,8 +391,8 @@ function cleanUpExplosion()
 var explosions = {}
 
 function killPlayerIfCrashed(chosenPlayer) {
-    game.physics.arcade.collide(chosenPlayer, collidables, function (player) {
-        if (!chosenPlayer.hasSentRestart) {
+    game.physics.arcade.collide(chosenPlayer.car, collidables, function (player) {
+        if (!chosenPlayer.car.hasSentRestart) {
             // Have to trigger an event here to pull this out into the event loop
             var event = new CustomEvent("restartPlayer", {"detail": player.controlData})
             document.dispatchEvent(event)
@@ -393,6 +404,7 @@ function killPlayerIfCrashed(chosenPlayer) {
         explosions[player] = game.add.sprite(player.x, game.world.centerY, 'kaboom');
         game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
         updateLeaderBoard(player);
+        chosenPlayer.textSprite.kill()
         player.kill()
         player = null
     })
@@ -405,9 +417,7 @@ function updateLeaderBoard(player) {
     console.log("Try the leaderboard");
     console.log(player);
 
-
-
-    if(typeof player.controlData.name == 'undefined' || !player.controlData.name)
+    if(!player.controlData.name)
         return;
 
     if(typeof leaderboard[player.controlData.id] != "undefined")
@@ -434,14 +444,13 @@ function updateLeaderBoard(player) {
         }
     }
 
-    console.log(leaderboard);
     console.log(leadersString);
 
     document.getElementById("high-scores").innerHTML = leadersString;
 }
 
 function updatePlayer(chosenPlayer) {
-    if (!chosenPlayer.invincible) {
+    if (!chosenPlayer.car.invincible) {
         killPlayerIfCrashed(chosenPlayer);
     }
 
@@ -452,18 +461,23 @@ function updatePlayer(chosenPlayer) {
         makeCollidable(lane)
     }
 
-    if (chosenPlayer.alive && typeof chosenPlayer.controlData != 'undefined') {
-        chosenPlayer.body.velocity.x = chosenPlayer.controlData.accelY * 60;
+    if (chosenPlayer.car.alive && typeof chosenPlayer.car.controlData != 'undefined') {
+        chosenPlayer.car.body.velocity.x = chosenPlayer.car.controlData.accelY * 60;
 
         // Maybe we are testing with arrow keys
         if (cursors.left.isDown) {
-            chosenPlayer.body.velocity.x = -300
+            chosenPlayer.car.body.velocity.x = -300
         } else if (cursors.right.isDown) {
-            chosenPlayer.body.velocity.x = 300
+            chosenPlayer.car.body.velocity.x = 300
 
         } else {
-            chosenPlayer.animations.stop()
+            chosenPlayer.car.animations.stop()
         }
+    }
+
+    if (chosenPlayer.textSprite) {
+
+        chosenPlayer.textSprite.x = chosenPlayer.car.body.x
     }
 }
 
@@ -483,15 +497,17 @@ function update() {
 
 function render () {
     var y = 64;
+
     count = 0;
     for (var playerID in players) {
-        if(typeof players[playerID].controlData != 'undefined'){
+        if(typeof players[playerID].car.controlData != 'undefined'){
             game.debug.text(players[playerID].controlData.name + ': ' + players[playerID].score, 32, y);
             count++;
         }
 
         y = y + 32;
     }
+
     if(count === 0)
     {
         clearDebugText();
