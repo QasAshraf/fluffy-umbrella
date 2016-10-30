@@ -232,9 +232,9 @@ function addPlayer(playerID) {
 
     var offset = 150 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
-    var cars = ['car_blue_3.png','car_black_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
+    var cars = ['car_black_3.png','car_blue.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
 
-    players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', "car_green_3.png")
+    players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', cars[current_car_index])
     current_car_index = current_car_index + 1;
     if(current_car_index > cars.length - 1){
         current_car_index = 0
@@ -393,21 +393,14 @@ function updatePlayer(chosenPlayer) {
     if (chosenPlayer.alive && typeof chosenPlayer.controlData != 'undefined') {
         chosenPlayer.body.velocity.x = chosenPlayer.controlData.accelY * 60;
 
-        if (chosenPlayer.controlData.accelY > 0)
-            chosenPlayer.animations.play('left')
-        else
-            chosenPlayer.animations.play('right')
-
         // Maybe we are testing with arrow keys
         if (cursors.left.isDown) {
             chosenPlayer.body.velocity.x = -300
-            chosenPlayer.animations.play('left')
         } else if (cursors.right.isDown) {
             chosenPlayer.body.velocity.x = 300
-            chosenPlayer.animations.play('right')
+
         } else {
             chosenPlayer.animations.stop()
-            chosenPlayer.frame = 4
         }
     }
 }
