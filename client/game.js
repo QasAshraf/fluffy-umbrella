@@ -501,7 +501,7 @@ function render () {
     count = 0;
     for (var playerID in players) {
         if(typeof players[playerID].car.controlData != 'undefined'){
-            game.debug.text(players[playerID].car.controlData.name + ': ' + players[playerID].score, 32, y);
+            game.debug.text(players[playerID].car.controlData.name + ': ' + players[playerID].car.score, 32, y);
             count++;
         }
 
