@@ -8,10 +8,12 @@ function addControlData(player, playerData)
 }
 
 function addPlayerText(player) {
-    var styles = {
-
+    var style = {
+        fill: '#fff',
+        align: 'center'
     }
-    player.textSprite = game.add.text(player.car.body.x, player.car.body.y + 120, player.car.controlData.name)
+
+    player.textSprite = game.add.text(player.car.body.x, player.car.body.y + 120, player.car.controlData.name, style)
 }
 
 function updateOrAddPlayerControl(playerData)
