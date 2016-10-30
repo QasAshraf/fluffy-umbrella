@@ -208,6 +208,8 @@ var current_car_index = 0
 
 function addPlayer(playerID) {
 
+    console.log("Adding player " + playerID);
+
     var offset = 100 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
     var cars = ['car_black_3.png','car_blue_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
@@ -260,9 +262,21 @@ function create() {
 
     var socket = io();
     socket.on('serverUserData', function (msg) {
-        console.log(msg);
-        update_add_player_control(msg);
+        if(msg)
+        {
+            console.log('serverUserData: ' + JSON.stringify(msg));
+            update_add_player_control(msg);
+        }
     });
+
+    socket.on('serverUserDisconnect', function(id){
+        console.log('Cleanup player ' + id);
+        if(players[id])
+        {
+            getRidOfSprite(players[id]);
+            delete players[id];
+        }
+    })
 }
 
 function updateScores() {

@@ -22,8 +22,6 @@
     var socket = io();
     var lastData;
 
-    socket.emit('controllerData', 'ping');
-
     socket.on('serverBroadcast', function(msg){
         console.log(msg);
     });
