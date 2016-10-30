@@ -230,7 +230,6 @@ function addPlayer(playerID) {
     players[playerID].alpha = 0.3;
 
     game.time.events.add(Phaser.Timer.SECOND * 3, function () {
-        console.log('playerrId = ' + playerID);
         players[playerID].invincible = false
         players[playerID].alpha = 1;
     }, this);
@@ -241,6 +240,7 @@ function addPlayer(playerID) {
 }
 
 function create() {
+    
     var divisor = game.world.width / NUMBER_OF_LANES
     for (var i = 0; i < game.world.width; i += divisor) {
       lanes.push({
@@ -257,6 +257,13 @@ function create() {
         lane.laneSprite = laneSprite
     })
 
+    var style = { font: "60px Arial", fill: "#ffffff", align: "center" };
+    var text = game.add.text(game.world.centerX, game.world.centerY, "M60 Mayhem\nConnect a controller to start", style);
+    text.anchor.set(0.5);
+    text.alpha = 0.1;
+
+    game.add.tween(text).to( { alpha: 1 }, 2000, "Linear", true);
+    
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE)
 
@@ -283,6 +290,9 @@ function create() {
     });
 
     socket.on('serverUserData', function (msg) {
+        if (text != undefined) {
+            text.destroy()
+        }
         if(msg)
         {
             console.log('serverUserData: ' + JSON.stringify(msg));
