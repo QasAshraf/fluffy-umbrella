@@ -226,9 +226,9 @@ function addPlayer(playerID) {
     players[playerID].scale.x = 0.9
     players[playerID].scale.y = 0.9
     players[playerID].score = 0
-
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID])
+    players[playerID].body.collideWorldBounds = true
 }
 
 function create() {
