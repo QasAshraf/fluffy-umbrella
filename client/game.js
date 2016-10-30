@@ -305,18 +305,13 @@ function create() {
         {
             getRidOfSprite(players[id]);
             delete players[id];
-            clearDebugText();
         }
     })
 }
 
 function clearDebugText()
 {
-    if(players.length === 0)
-    {
-        game.debug.text('No more players left', 32, 32);
-        game.debug.text('Please connect a controller to start again', 32, 64);
-    }
+    game.debug.text('No players', 32, 32);
 }
 
 function updateScores() {
@@ -485,13 +480,17 @@ function update() {
 
 function render () {
     var y = 64;
-    clearDebugText();
+    count = 0;
     for (var playerID in players) {
-
         if(typeof players[playerID].controlData != 'undefined'){
             game.debug.text(players[playerID].controlData.name + ': ' + players[playerID].score, 32, y);
+            count++;
         }
 
         y = y + 32;
+    }
+    if(count === 0)
+    {
+        clearDebugText();
     }
 }
