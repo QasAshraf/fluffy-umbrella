@@ -5,11 +5,17 @@
     transform: rotate(90deg);
     margin-top: 150px;"></div>
     <div class="small-4 large-4 columns">
-        <h1 style="
+        <h1 id="playText" style="
         line-height: 370px;
         vertical-align: middle;
         margin-top: 50px;
         ">Rotate to play</h1>
+        <h1 id="restart" style="
+        line-height: 370px;
+        vertical-align: middle;
+        margin-top: 50px;
+        display: none;
+        ">Restart</h1>
     </div>
     <div class="small-4 large-4 columns"><img src="arrow.png" style="
     transform: rotate(270deg);
@@ -25,6 +31,27 @@
     socket.on('serverBroadcast', function(msg){
         console.log(msg);
     });
+
+    var lastData = {
+        "id" : socket.id,
+        "name" : "Dave"
+    };
+
+    socket.emit('controllerData', lastData);
+
+    // Server tells user they have crashed
+    socket.on('controllerRestart', function (msg) {
+        console.log(msg)
+        document.getElementById('playText').style.display = "none"
+        document.getElementById('restart').style.display = "block"
+    })
+
+    var button = document.getElementById('restart')
+    button.addEventListener('click', function (e) {
+        socket.emit('playerTriedToRestart', lastData)
+        document.getElementById('playText').style.display = "initial"
+        document.getElementById('restart').style.display = "none"
+    })
 
     if(window.DeviceMotionEvent){
         window.addEventListener("devicemotion", motion, false);

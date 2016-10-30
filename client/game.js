@@ -1,4 +1,5 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update, render: render})
+var socket = io();
 
 function addControlData(player, playerData)
 {
@@ -43,7 +44,13 @@ function preload() {
     game.scale.pageAlignHorizontally = true;
 }
 
+
 var timer;
+// Add an event listener
+document.addEventListener("restartPlayer", function(e) {
+    console.log(e.detail)
+    socket.emit('clientRestart', e.detail)
+});
 var explosion
 var player
 var players = {}
@@ -236,7 +243,10 @@ function create() {
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
 
-    var socket = io();
+    socket.on('restartPlayer', function(playerId) {
+        delete players[playerId]
+    });
+
     socket.on('serverUserData', function (msg) {
         if(msg)
         {
@@ -317,6 +327,13 @@ function fadeExplosion() {
 
 function updatePlayer(chosenPlayer) {
     game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
+        if (!chosenPlayer.hasSentRestart) {
+            // Have to trigger an event here to pull this out into the event loop
+            var event = new CustomEvent("restartPlayer", {"detail": chosenPlayer.controlData})
+            document.dispatchEvent(event)
+            chosenPlayer.hasSentRestart = true
+        }
+
         explosion.play();
         explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
         game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
