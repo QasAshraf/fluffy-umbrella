@@ -43,7 +43,12 @@ function preload() {
     game.scale.pageAlignHorizontally = true;
 }
 
+
 var timer;
+// Add an event listener
+document.addEventListener("restartPlayer", function(e) {
+    socket.emit('clientRestart', e.detail)
+});
 var explosion
 var player
 var players = {}
@@ -204,20 +209,21 @@ var collidableSprites = {
     }
 }
 
-var playerQueue = [];
+var playerQueue = {};
 
 function queueAddPlayer(playerID) {
-    playerQueue.push(playerID);
+    playerQueue[playerID] = playerID;
     console.log(playerQueue);
 }
 
 function dequeueAddPlayer()
 {
-    var arrayLength = playerQueue.length;
-
-    // Extract all the players and add them
-    for (var i = 0; i < arrayLength; i++) {
-        addPlayer(playerQueue.pop());
+    console.log("Dequeueing players")
+    for (var playerID in playerQueue) {
+        if (playerQueue.hasOwnProperty(playerID)) {
+            addPlayer(playerID) // Add them to the players
+            delete playerQueue[playerID] // lets get rid of the queued fella
+        }
     }
 }
 
@@ -225,9 +231,12 @@ var current_car_index = 0
 
 function addPlayer(playerID) {
 
-    console.log("Adding player " + playerID);
+    if(typeof playerID == 'undefined')
+        return;
 
-    var offset = 130 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
+    console.log("Adding player " + playerID + " with colour " + current_car_index);
+
+    var offset = 150 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
     var cars = ['car_black_3.png','car_blue_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
 
@@ -278,6 +287,14 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys()
 
     var socket = io();
+
+    socket.on('restartPlayer', function(playerId) {
+        console.log('playerId', playerId)
+        console.log('players', players)
+        delete players[playerId]
+        console.log('players', players)
+    });
+
     socket.on('serverUserData', function (msg) {
         if(msg)
         {
@@ -358,6 +375,13 @@ function fadeExplosion() {
 
 function updatePlayer(chosenPlayer) {
     game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
+        if (!chosenPlayer.hasSentRestart) {
+            // Have to trigger an event here to pull this out into the event loop
+            var event = new CustomEvent("restartPlayer", {"detail": chosenPlayer.controlData})
+            document.dispatchEvent(event)
+            chosenPlayer.hasSentRestart = true
+        }
+
         explosion.play();
         explosion = game.add.sprite(player.x, game.world.centerY, 'kaboom');
         game.time.events.add(Phaser.Timer.SECOND * 1, fadeExplosion, explosion);
@@ -372,7 +396,7 @@ function updatePlayer(chosenPlayer) {
         makeCollidable(lane)
     }
 
-    if (chosenPlayer.alive) {
+    if (chosenPlayer.alive && typeof chosenPlayer.controlData != 'undefined') {
         chosenPlayer.body.velocity.x = chosenPlayer.controlData.accelY * 60;
 
         if (chosenPlayer.controlData.accelY > 0)

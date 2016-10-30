@@ -18,15 +18,15 @@ http.listen(8080, function () {
 });
 
 io.on('connection', function(socket){
-    console.log('a user connected');
-
+    console.log(`user ${socket.id} connected`);
+    socket.emit('ping')
     socket.on('disconnect', function(){
         console.log('user ' + this.id + ' disconnected');
         io.emit('serverUserDisconnect', this.id);
     });
 
     socket.on('controllerData', function(data){
-        console.log('controllerData: ' + JSON.stringify(data, null, 4));
+        //console.log('controllerData: ' + JSON.stringify(data, null, 4));
 
         //Lets forward on this data to the client game view
         if(data)
@@ -34,4 +34,17 @@ io.on('connection', function(socket){
             io.emit('serverUserData', data);
         }
     });
+
+    socket.on('playerTriedToRestart', function (data) {
+        io.emit('restartPlayer', data.id)
+    })
+
+    socket.on('clientRestart', function (data) {
+        var client = io.clients()
+
+        if (client) {
+            client.emit('controllerRestart', 'piss off')
+        }
+
+    })
 });
