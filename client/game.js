@@ -226,6 +226,15 @@ function addPlayer(playerID) {
     players[playerID].scale.x = 0.9
     players[playerID].scale.y = 0.9
     players[playerID].score = 0
+    players[playerID].invincible = true
+    players[playerID].alpha = 0.3;
+
+    game.time.events.add(Phaser.Timer.SECOND * 3, function () {
+        console.log('playerrId = ' + playerID);
+        players[playerID].invincible = false
+        players[playerID].alpha = 1;
+    }, this);
+    
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID])
     players[playerID].body.collideWorldBounds = true
@@ -294,7 +303,7 @@ function create() {
 function updateScores() {
     for (var playerID in players) {
         var player = players[playerID];
-        if(player.alive)
+        if(player.alive && !player.invincible)
         {
             player.score++
             console.log("Player " + playerID + " has score of " + player.score)
@@ -351,8 +360,8 @@ function fadeExplosion() {
     explosion.kill()
 }
 
-function updatePlayer(chosenPlayer) {
-    game.physics.arcade.collide(chosenPlayer, collidables, function (player, collidables) {
+function killPlayerIfCrashed(chosenPlayer) {
+    game.physics.arcade.collide(chosenPlayer, collidables, function (player) {
         if (!chosenPlayer.hasSentRestart) {
             // Have to trigger an event here to pull this out into the event loop
             var event = new CustomEvent("restartPlayer", {"detail": chosenPlayer.controlData})
@@ -366,6 +375,12 @@ function updatePlayer(chosenPlayer) {
         player.kill()
         player = null
     })
+}
+function updatePlayer(chosenPlayer) {
+
+    if (!chosenPlayer.invincible) {
+        killPlayerIfCrashed(chosenPlayer);
+    }
 
     var chance = Math.random()
     var maxcollidables = NUMBER_OF_LANES * 2
