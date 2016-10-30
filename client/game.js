@@ -475,6 +475,10 @@ function update() {
 
 function render () {
     var y = 64;
+    if(players.length = 0)
+    {
+        game.debug.text('', 32, y);
+    }
     for (var playerID in players) {
 
         if(typeof players[playerID].controlData != 'undefined'){
