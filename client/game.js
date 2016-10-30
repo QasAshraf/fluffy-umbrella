@@ -16,6 +16,31 @@ ion.sound({
 var bgMusicPlaying = false;
 
 
+function displayBanner(msg, timeout) {
+    console.log("add banner msg: " + msg);
+
+    bannertext = game.add.text(game.world.centerX, 100, msg);
+    bannertext.anchor.setTo(0.5);
+
+    bannertext.font = 'Coiny';
+    bannertext.fontSize = 40;
+
+    //  x0, y0 - x1, y1
+    grd = bannertext.context.createLinearGradient(0, 0, 0, bannertext.canvas.height);
+    grd.addColorStop(0, '#ffb3b3');
+    grd.addColorStop(1, '#ff0000');
+    bannertext.fill = grd;
+
+    bannertext.align = 'center';
+    bannertext.stroke = '#000000';
+    bannertext.strokeThickness = 2;
+    bannertext.setShadow(5, 5, 'rgba(0,0,0,0.5)', 5);
+
+    //game.add.tween(bannertext).to( { alpha: 1 }, 2000, "Linear", true);
+
+    bannertext.lifespan = timeout;
+}
+
 function addControlData(player, playerData)
 {
     player.controlData = playerData;
@@ -54,6 +79,21 @@ function updateOrAddPlayerControl(playerData)
     addPlayer(playerData.id);
 }
 
+//  The Google WebFont Loader will look for this object, so create it before loading the script.
+WebFontConfig = {
+
+    //  'active' means all requested fonts have finished loading
+    //  We set a 1 second delay before calling 'createText'.
+    //  For some reason if we don't the browser cannot render the text the first time it's created.
+    active: function() { game.time.events.add(500, createText, this); },
+
+    //  The Google Fonts we want to load (specify as many as you like in the array)
+    google: {
+        families: ['Coiny']
+    }
+
+};
+
 function preload() {
     game.load.image('road', 'assets/road.png')
     game.load.image('box', 'assets/box.png')
@@ -67,6 +107,9 @@ function preload() {
         'assets/sprites/spritesheet_objects.png',
         'assets/sprites/spritesheet_objects.xml'
     )
+
+    //  Load the Google WebFont Loader script
+    game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
     // Explosions!
     game.load.image('kaboom', 'assets/explosion.png', 64, 64);
@@ -261,6 +304,14 @@ var current_car_index = 0
 
 function addBonusScore(player, collectible) {
     player.score += Math.round(Math.random() * (48) + 2); // 2 - 50
+
+    var msg = "";
+    if(player.controlData.name)
+        msg = player.controlData.name + " grabbed some points";
+    else
+        msg = "bonus points claimed";
+
+    displayBanner(msg, 750);
 }
 
 function addPlayer(playerID) {
@@ -292,7 +343,7 @@ function addPlayer(playerID) {
     player.alpha = 0.3;
 
     game.time.events.add(Phaser.Timer.SECOND * 3, function () {
-        if(typeof players[playerID].car != 'undefined') {
+        if(players[playerID] && typeof players[playerID].car != 'undefined') {
             player.invincible = false
             player.alpha = 1;
         }
@@ -300,15 +351,40 @@ function addPlayer(playerID) {
 
     //  We need to enable physics on the players
     game.physics.arcade.enable(players[playerID].car)
-    
+
     if(!bgMusicPlaying) {
         ion.sound.play("bgmusic");
         bgMusicPlaying = true;
     }
 
-    player.body.setSize(player.width - 25, player.height, 15);
+    player.body.setSize(player.width - 15, player.height - 10, 11, 10);
     player.body.collideWorldBounds = true
+
+    displayBanner("New player connected", 1000);
 }
+
+function createText() {
+
+    text = game.add.text(game.world.centerX, game.world.centerY, "- M60 Mayhem -\nconnect a controller\n to start");
+    text.anchor.setTo(0.5);
+
+    text.font = 'Coiny';
+    text.fontSize = 60;
+
+    //  x0, y0 - x1, y1
+    grd = text.context.createLinearGradient(0, 0, 0, text.canvas.height);
+    grd.addColorStop(0, '#8ED6FF');
+    grd.addColorStop(1, '#004CB3');
+    text.fill = grd;
+
+    text.align = 'center';
+    text.stroke = '#000000';
+    text.strokeThickness = 2;
+    text.setShadow(5, 5, 'rgba(0,0,0,0.5)', 5);
+
+    game.add.tween(text).to( { alpha: 1 }, 2000, "Linear", true);
+}
+
 
 function create() {
     var divisor = game.world.width / NUMBER_OF_LANES
@@ -326,13 +402,6 @@ function create() {
         laneSprite.scale.y = 2.5
         lane.laneSprite = laneSprite
     })
-
-    var style = { font: "60px Arial", fill: "#ffffff", align: "center" };
-    var text = game.add.text(game.world.centerX, game.world.centerY, "M60 Mayhem\nConnect a controller to start", style);
-    text.anchor.set(0.5);
-    text.alpha = 0.1;
-
-    game.add.tween(text).to( { alpha: 1 }, 2000, "Linear", true);
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE)
@@ -361,7 +430,7 @@ function create() {
     });
 
     socket.on('serverUserData', function (msg) {
-        if (text != undefined) {
+        if (typeof text != "undefined") {
             text.destroy()
         }
         if(msg)
@@ -587,7 +656,7 @@ function render () {
             count++;
         }
 
-        game.debug.body(players[playerID].car)
+        //game.debug.body(players[playerID].car)
 
         y = y + 32;
     }
