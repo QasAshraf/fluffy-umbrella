@@ -375,16 +375,16 @@ function killPlayerIfCrashed(chosenPlayer) {
     game.physics.arcade.collide(chosenPlayer, collidables, function (player) {
         if (!chosenPlayer.hasSentRestart) {
             // Have to trigger an event here to pull this out into the event loop
-            var event = new CustomEvent("restartPlayer", {"detail": chosenPlayer.controlData})
+            var event = new CustomEvent("restartPlayer", {"detail": player.controlData})
             document.dispatchEvent(event)
-            chosenPlayer.hasSentRestart = true
+            player.hasSentRestart = true
         }
 
         explosion.play();
 
         explosions[player] = game.add.sprite(player.x, game.world.centerY, 'kaboom');
         game.time.events.add(Phaser.Timer.SECOND * 1, cleanUpExplosion, player);
-        updateLeaderBoard(chosenPlayer);
+        updateLeaderBoard(player);
         player.kill()
         player = null
     })
@@ -397,8 +397,8 @@ function updateLeaderBoard(player) {
     console.log("Try the leaderboard");
     console.log(player);
 
-    //if(!player.name)
-    //    return;
+    if(!player.controlData.name)
+        return;
 
     if(typeof leaderboard[player.controlData.id] != "undefined")
     {
