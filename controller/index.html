@@ -31,6 +31,10 @@
     </div>
 </div>
 
+<audio id="turning-car">
+    <source src="assets/sound/squealing.wav" type="audio/wav">
+</audio>
+
 <script src="/socket.io.js"></script>
 <script src="/NoSleep.min.js"></script>
 <script>
@@ -39,6 +43,19 @@
 
     function username(){
         return document.getElementById('name_input').value;
+    }
+
+    var readyToSqueal = true;
+    function playSquealingNoise(angle) {
+        var sound = document.getElementById('turning-car');
+        if(Math.abs(angle) < 8)
+        {
+            readyToSqueal = true;
+        }
+        if(Math.abs(angle) > 8 && readyToSqueal) {
+            sound.play();
+            readyToSqueal = false;
+        }
     }
 
     socket.on('serverBroadcast', function(msg){
@@ -150,6 +167,9 @@
     });
 
     function updateServer(){
+        if(typeof lastData != 'undefined') {
+            playSquealingNoise(lastData.accelY);
+        }
         socket.emit('controllerData', lastData);
     }
 
