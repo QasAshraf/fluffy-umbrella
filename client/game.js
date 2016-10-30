@@ -525,20 +525,6 @@ function updatePlayer(chosenPlayer) {
         collectCollectible(chosenPlayer);
     }
 
-    var chance = Math.random()
-    var maxcollidables = NUMBER_OF_LANES * 2
-    if (chance >= 0.97 && collidables.children.length < maxcollidables) {
-        var lane = pickLane(lanes)
-        makeMovingSprite(lane, false)
-    }
-
-    //re-roll the dice
-    chance = Math.random()
-    if (chance >= 0.99) {
-        var lane = pickLane(lanes)
-        makeMovingSprite(lane, true)
-    }
-
     if (chosenPlayer.car.alive && typeof chosenPlayer.car.controlData != 'undefined') {
         chosenPlayer.car.body.velocity.x = chosenPlayer.car.controlData.accelY * 60;
         chosenPlayer.car.angle = chosenPlayer.car.controlData.accelY; // we have between -10 .. +10 acella data
@@ -574,6 +560,20 @@ function update() {
         if (players.hasOwnProperty(playerID)) {
             updatePlayer(players[playerID])
         }
+    }
+    
+    var chance = Math.random()
+    var maxcollidables = NUMBER_OF_LANES * 2
+    if (chance >= 0.93 && collidables.children.length < maxcollidables) {
+        var lane = pickLane(lanes)
+        makeMovingSprite(lane, false)
+    }
+
+    //re-roll the dice
+    chance = Math.random()
+    if (chance >= 0.97) {
+        var lane = pickLane(lanes)
+        makeMovingSprite(lane, true)
     }
 }
 
