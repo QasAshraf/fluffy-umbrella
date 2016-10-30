@@ -90,7 +90,7 @@
                 "accelY": -10,
                 "accelZ": 0,
             }
-        } else {
+        } else if (dir == 'right') {
             lastData = {
                 "id": socket.id,
                 "name": "Dave",
@@ -98,7 +98,17 @@
                 "accelY": 10,
                 "accelZ": 0,
             }
+        } else {
+            lastData = {
+                "id": socket.id,
+                "name": "Dave",
+                "accelX": 0,
+                "accelY": 0,
+                "accelZ": 0,
+            }
         }
+
+
     }
 
     $(document).keydown(function(e) {
@@ -112,6 +122,27 @@
 
             case 39: // right
                 sendSpoofMotion('right')
+                break;
+
+            case 40: // down
+                break;
+
+            default: return; // exit this handler for other keys
+        }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+    });
+
+    $(document).keyup(function(e) {
+        switch(e.which) {
+            case 37: // left
+                sendSpoofMotion('none')
+                break;
+
+            case 38: // up
+                break;
+
+            case 39: // right
+                sendSpoofMotion('none')
                 break;
 
             case 40: // down

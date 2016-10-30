@@ -1,28 +1,27 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update, render: render})
-var socket = io();
 
 function addControlData(player, playerData)
 {
     player.controlData = playerData;
 }
 
-function update_add_player_control(playerData)
+function updateOrAddPlayerControl(playerData)
 {
     if(!playerData)
     {
         return;
     }
 
+    // Do we have an existing player, if so add the controller data
     if (players.hasOwnProperty(playerData.id)) {
         addControlData(players[playerData.id], playerData);
         return;
     }
 
-    // Looks like we have created this player, must be a new comer
+    // Looks like we have a new comer
     console.log("Welcome: " + playerData.id);
 
-    addPlayer(playerData.id);
-    addControlData(players[playerData.id], playerData);
+    queueAddPlayer(playerData.id);
 }
 
 function preload() {
@@ -100,6 +99,12 @@ var collidableSprites = {
         scale: 0.8,
         rotation: false
     },
+    "car-blue3": {
+        spriteName: 'car_blue_3.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
     "car-blue4": {
         spriteName: 'car_blue_4.png',
         spriteSheet: 'vehicles',
@@ -113,12 +118,18 @@ var collidableSprites = {
         rotation: false
     },
     "car-red": {
-        spriteName: 'car_red_1.png',
+        spriteName: 'car_red_3.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
     },
     "car-red2": {
+        spriteName: 'car_red_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-red3": {
         spriteName: 'car_red_2.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
@@ -137,25 +148,31 @@ var collidableSprites = {
         rotation: false
     },
     "car-green": {
-        spriteName: 'car_green_1.png',
+        spriteName: 'car_green_5.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
     },
     "car-green2": {
+        spriteName: 'car_green_1.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-green3": {
         spriteName: 'car_green_2.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
     },
     "car-green4": {
-        spriteName: 'car_green_4.png',
+        spriteName: 'car_green_3.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
     },
     "car-green5": {
-        spriteName: 'car_green_5.png',
+        spriteName: 'car_green_4.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
@@ -168,6 +185,12 @@ var collidableSprites = {
     },
     "car-yellow2": {
         spriteName: 'car_yellow_2.png',
+        spriteSheet: 'vehicles',
+        scale: 0.8,
+        rotation: false
+    },
+    "car-yellow3": {
+        spriteName: 'car_yellow_3.png',
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
@@ -186,13 +209,34 @@ var collidableSprites = {
     }
 }
 
+var playerQueue = {};
+
+function queueAddPlayer(playerID) {
+    playerQueue[playerID] = playerID;
+    console.log(playerQueue);
+}
+
+function dequeueAddPlayer()
+{
+    console.log("Dequeueing players")
+    for (var playerID in playerQueue) {
+        if (playerQueue.hasOwnProperty(playerID)) {
+            addPlayer(playerID) // Add them to the players
+            delete playerQueue[playerID] // lets get rid of the queued fella
+        }
+    }
+}
+
 var current_car_index = 0
 
 function addPlayer(playerID) {
 
+    if(typeof playerID == 'undefined')
+        return;
+
     console.log("Adding player " + playerID + " with colour " + current_car_index);
 
-    var offset = 100 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
+    var offset = 150 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
     var cars = ['car_black_3.png','car_blue_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
 
@@ -242,6 +286,8 @@ function create() {
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys()
 
+    var socket = io();
+
     socket.on('restartPlayer', function(playerId) {
         console.log('playerId', playerId)
         console.log('players', players)
@@ -252,8 +298,8 @@ function create() {
     socket.on('serverUserData', function (msg) {
         if(msg)
         {
-            //console.log('serverUserData: ' + JSON.stringify(msg));
-            update_add_player_control(msg);
+            console.log('serverUserData: ' + JSON.stringify(msg));
+            updateOrAddPlayerControl(msg);
         }
     });
 
@@ -350,7 +396,7 @@ function updatePlayer(chosenPlayer) {
         makeCollidable(lane)
     }
 
-    if (chosenPlayer.alive) {
+    if (chosenPlayer.alive && typeof chosenPlayer.controlData != 'undefined') {
         chosenPlayer.body.velocity.x = chosenPlayer.controlData.accelY * 60;
 
         if (chosenPlayer.controlData.accelY > 0)
@@ -373,6 +419,8 @@ function updatePlayer(chosenPlayer) {
 }
 
 function update() {
+
+    dequeueAddPlayer();
 
     lanes.forEach(function (lane) {
         lane.laneSprite.y += 8 //speed of road
