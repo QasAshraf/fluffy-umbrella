@@ -417,10 +417,12 @@ function updateLeaderBoard(player) {
         leaderboard[player.controlData.id].name = player.controlData.name;
     }
 
+    leaderboard
+
     var leadersString = "";
     for (var playerID in leaderboard) {
         if (leaderboard.hasOwnProperty(playerID)) {
-            leadersString += leaderboard[player.controlData.id].name + " : " + leaderboard[player.controlData.id].score + "</br>";
+            leadersString += "<span class='leadername'> " + leaderboard[playerID].name + "</span> <span class='leaderscore'>" + leaderboard[playerID].score + "</span></br>";
         }
     }
 
