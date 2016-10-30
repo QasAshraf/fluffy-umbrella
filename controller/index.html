@@ -91,6 +91,13 @@
         document.getElementById('playText').style.display = "none"
         document.getElementById('restart').style.display = "block"
         ion.sound.play('kaboom')
+
+        // Vibrate if possible
+        navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+        if (navigator.vibrate) {
+            // vibrate for one second
+            navigator.vibrate(1000);
+        }
     })
 
     var button = document.getElementById('restart')
