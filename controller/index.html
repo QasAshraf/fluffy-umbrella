@@ -36,15 +36,60 @@
 
     window.setInterval(updateServer, 100);
 
-    function motion(event){
+    function motion(event) {
+
+        if(event.accelerationIncludingGravity.x == null)
+            return;
+
         lastData = {
-            "id" : socket.id,
-            "name" : "Dave",
-            "accelX" : event.accelerationIncludingGravity.x,
-            "accelY" : event.accelerationIncludingGravity.y,
-            "accelZ" : event.accelerationIncludingGravity.z,
+            "id": socket.id,
+            "name": "Dave",
+            "accelX": event.accelerationIncludingGravity.x,
+            "accelY": event.accelerationIncludingGravity.y,
+            "accelZ": event.accelerationIncludingGravity.z,
         };
     }
+
+    function sendSpoofMotion(dir) {
+        if(dir == 'left') {
+            lastData = {
+                "id": socket.id,
+                "name": "Dave",
+                "accelX": 0,
+                "accelY": -10,
+                "accelZ": 0,
+            }
+        } else {
+            lastData = {
+                "id": socket.id,
+                "name": "Dave",
+                "accelX": 0,
+                "accelY": 10,
+                "accelZ": 0,
+            }
+        }
+    }
+
+    $(document).keydown(function(e) {
+        switch(e.which) {
+            case 37: // left
+                sendSpoofMotion('left')
+                break;
+
+            case 38: // up
+                break;
+
+            case 39: // right
+                sendSpoofMotion('right')
+                break;
+
+            case 40: // down
+                break;
+
+            default: return; // exit this handler for other keys
+        }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+    });
 
     function updateServer(){
         socket.emit('controllerData', lastData);
