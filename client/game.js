@@ -5,23 +5,23 @@ function addControlData(player, playerData)
     player.controlData = playerData;
 }
 
-function update_add_player_control(playerData)
+function updateOrAddPlayerControl(playerData)
 {
     if(!playerData)
     {
         return;
     }
 
+    // Do we have an existing player, if so add the controller data
     if (players.hasOwnProperty(playerData.id)) {
         addControlData(players[playerData.id], playerData);
         return;
     }
 
-    // Looks like we have created this player, must be a new comer
+    // Looks like we have a new comer
     console.log("Welcome: " + playerData.id);
 
-    addPlayer(playerData.id);
-    addControlData(players[playerData.id], playerData);
+    queueAddPlayer(playerData.id);
 }
 
 function preload() {
@@ -204,13 +204,30 @@ var collidableSprites = {
     }
 }
 
+var playerQueue = [];
+
+function queueAddPlayer(playerID) {
+    playerQueue.push(playerID);
+    console.log(playerQueue);
+}
+
+function dequeueAddPlayer()
+{
+    var arrayLength = playerQueue.length;
+
+    // Extract all the players and add them
+    for (var i = 0; i < arrayLength; i++) {
+        addPlayer(playerQueue.pop());
+    }
+}
+
 var current_car_index = 0
 
 function addPlayer(playerID) {
 
     console.log("Adding player " + playerID);
 
-    var offset = 100 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
+    var offset = 130 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
     var cars = ['car_black_3.png','car_blue_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
 
@@ -265,7 +282,7 @@ function create() {
         if(msg)
         {
             console.log('serverUserData: ' + JSON.stringify(msg));
-            update_add_player_control(msg);
+            updateOrAddPlayerControl(msg);
         }
     });
 
@@ -378,6 +395,8 @@ function updatePlayer(chosenPlayer) {
 }
 
 function update() {
+
+    dequeueAddPlayer();
 
     lanes.forEach(function (lane) {
         lane.laneSprite.y += 8 //speed of road
