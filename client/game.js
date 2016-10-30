@@ -479,7 +479,7 @@ function updatePlayer(chosenPlayer) {
 
         } else {
             chosenPlayer.car.animations.stop()
-            chosenPlayer.car.rotation = 0;
+            //chosenPlayer.car.rotation = 0;
         }
     }
 
