@@ -170,7 +170,7 @@ function makeCollidable(lane) {
     collidable.anchor.x = 0.5
     collidable.anchor.y = 0.5
     collidable.scale.set(randomCollidable.scale, randomCollidable.scale)
-    collidable.body.velocity.y = Math.random() * (400) + 300;
+    collidable.body.velocity.y = Math.random() * (100) + 300;
     collidable.body.immovable = false
     collidable.checkWorldBounds = true
     collidable.rotation = randomCollidable.rotation ? Math.random(0, 360) : 0
@@ -201,13 +201,13 @@ function updatePlayer(chosenPlayer) {
 
     var chance = Math.random()
     var maxcollidables = NUMBER_OF_LANES * 2
-    if (chance >= 0.94 && collidables.children.length < maxcollidables) {
+    if (chance >= 0.97 && collidables.children.length < maxcollidables) {
         var lane = pickLane(lanes)
         makeCollidable(lane)
     }
 
     if (chosenPlayer.alive) {
-        chosenPlayer.body.velocity.x = chosenPlayer.controlData.accelY * 30;
+        chosenPlayer.body.velocity.x = chosenPlayer.controlData.accelY * 60;
 
         if (chosenPlayer.controlData.accelY > 0)
             chosenPlayer.animations.play('left')
