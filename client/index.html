@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Game KK</title>    
+    <title>Game KK</title>
     <script type="text/javascript" src="phaser.min.js"></script>
     <style type="text/css">
         body {
+            font-family: sans-serif;
             margin: 0;
         }
 
         .leadername{
-            font-family: sans-serif;
             font-size: 24px;
             color: #233a3a;
             width: 120px;
@@ -26,20 +26,20 @@
         }
     </style>
 </head>
-<body>
-<div id="game"></div>
-<div style="float: left; margin-left: 30px;">
-    <h2>High Scores</h2>
-    <div id="high-scores"></div>
-</div>
+<body style="display: flex; flex-direction: row; justify-content: space-between;">
+<div id="game" style="width: 100%;"></div>
+<div id="meta" style="background-color: #f3f3f3; display: flex; flex-direction: column; align-items: center; padding: 10px;">
+    <div>
+        <h2 style="margin: 0;">On your phone go to:</h3>
+        <h1>hackmcr.papernweb.com/play</h1>
+    </div>
 
-<div style="    float: right;
-                padding-right: 30px;
-                padding-left: 30px;
-                background-color: #f3f3f3;">
-    <h3>On your phone go to:</h3>
-    <h1>hackmcr.papernweb.com/play</h1>
     <img src="assets/chart.png" alt="Join the game via QR code" />
+
+    <div id="high-scores-container" style="width: 100%; text-align: center;">
+        <h2>High Scores</h2>
+        <div id="high-scores"></div>
+    </div>
 </div>
 
 <script src="/socket.io.js"></script>

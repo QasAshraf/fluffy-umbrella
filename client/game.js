@@ -60,8 +60,8 @@ function preload() {
 
     // Make game fill screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    game.scale.pageAlignVertically = true;
-    game.scale.pageAlignHorizontally = true;
+    //game.scale.pageAlignVertically = true;
+    //game.scale.pageAlignHorizontally = true;
 }
 
 
@@ -260,6 +260,8 @@ function addPlayer(playerID) {
     if(current_car_index > cars.length - 1){
         current_car_index = 0
     }
+
+    players[playerID].car.anchor.set(0.5);
     players[playerID].car.scale.x = 0.9
     players[playerID].car.scale.y = 0.9
     players[playerID].car.score = 0
@@ -447,7 +449,7 @@ function updateLeaderBoard(player) {
     console.log("Try the leaderboard");
     console.log(player);
 
-    if(!player.controlData && !player.controlData.name)
+    if(typeof player.controlData == "undefined" || !player.controlData.name)
         return;
 
     if(typeof leaderboard[player.controlData.id] != "undefined")
@@ -464,8 +466,6 @@ function updateLeaderBoard(player) {
         leaderboard[player.controlData.id].score = player.score;
         leaderboard[player.controlData.id].name = player.controlData.name;
     }
-
-    leaderboard
 
     var leadersString = "";
     for (var playerID in leaderboard) {
@@ -512,6 +512,7 @@ function updatePlayer(chosenPlayer) {
 
     if (chosenPlayer.car.alive && typeof chosenPlayer.car.controlData != 'undefined') {
         chosenPlayer.car.body.velocity.x = chosenPlayer.car.controlData.accelY * 60;
+        chosenPlayer.car.angle = chosenPlayer.car.controlData.accelY / 1.2; // we have between -10 .. +10 acella data
 
         // Maybe we are testing with arrow keys
         if (cursors.left.isDown) {
