@@ -33,10 +33,7 @@
     </div>
 </div>
 
-<audio id="turning-car">
-    <source src="assets/sound/squealing.wav" type="audio/wav">
-</audio>
-
+<script src="./ion.sound.min.js"></script>
 <script src="/socket.io.js"></script>
 <script src="/NoSleep.min.js"></script>
 <script>
@@ -48,14 +45,25 @@
     }
 
     var readyToSqueal = true;
+
+    ion.sound({
+        sounds: [
+            {
+                name: "squealing",
+                path: "assets/sound/",
+            }
+        ],
+        volume: 1,
+        preload: true
+    });
+
     function playSquealingNoise(angle) {
-        var sound = document.getElementById('turning-car');
         if(Math.abs(angle) < 8)
         {
             readyToSqueal = true;
         }
         if(Math.abs(angle) > 8 && readyToSqueal) {
-            sound.play();
+            ion.sound.play("squealing");
             readyToSqueal = false;
         }
     }
