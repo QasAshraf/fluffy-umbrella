@@ -510,13 +510,12 @@ function updateLeaderBoard(player) {
 }
 
 function collectCollectible(chosenPlayer) {
-    game.physics.arcade.collide(chosenPlayer.car, collectibles, function (player, collectible) {
+    game.physics.arcade.overlap(chosenPlayer.car, collectibles, function (player, collectible) {
         if(player.alive)
         {
             collectible.destroy()
             collectible.colisionAction(player, collectible)
         }
-        return false; //make sure pushing doesnt happen
     })
 }
 
