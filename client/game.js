@@ -75,12 +75,6 @@ var collidableSprites = {
         scale: 0.6,
         rotation: false
     },
-    "motorbike-black": {
-        spriteName: 'motorcycle_black.png',
-        spriteSheet: 'vehicles',
-        scale: 0.6,
-        rotation: false
-    },
     "motorbike-yellow": {
         spriteName: 'motorcycle_yellow.png',
         spriteSheet: 'vehicles',
@@ -238,7 +232,7 @@ function addPlayer(playerID) {
 
     var offset = 150 + (100 * Math.random()) // TODO: this needs thinking about, I dont want cars to load ontop of each other
 
-    var cars = ['car_black_3.png','car_blue_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
+    var cars = ['car_blue_3.png','car_black_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
 
     players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', cars[current_car_index])
     current_car_index = current_car_index + 1;
