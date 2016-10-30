@@ -234,7 +234,7 @@ function addPlayer(playerID) {
 
     var cars = ['car_blue_3.png','car_black_3.png','car_green_3.png','car_red_3.png','car_yellow_3.png']
 
-    players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', cars[current_car_index])
+    players[playerID] = game.add.sprite(offset, game.world.height - 150, 'vehicles', "car_green_3.png")
     current_car_index = current_car_index + 1;
     if(current_car_index > cars.length - 1){
         current_car_index = 0
