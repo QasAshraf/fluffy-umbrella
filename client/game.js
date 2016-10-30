@@ -21,7 +21,7 @@ function updateOrAddPlayerControl(playerData)
     // Looks like we have a new comer
     console.log("Welcome: " + playerData.id);
 
-    queueAddPlayer(playerData.id);
+    addPlayer(playerData.id);
 }
 
 function preload() {
@@ -200,24 +200,6 @@ var collidableSprites = {
         spriteSheet: 'vehicles',
         scale: 0.8,
         rotation: false
-    }
-}
-
-var playerQueue = {};
-
-function queueAddPlayer(playerID) {
-    playerQueue[playerID] = playerID;
-    console.log(playerQueue);
-}
-
-function dequeueAddPlayer()
-{
-    console.log("Dequeueing players")
-    for (var playerID in playerQueue) {
-        if (playerQueue.hasOwnProperty(playerID)) {
-            addPlayer(playerID) // Add them to the players
-            delete playerQueue[playerID] // lets get rid of the queued fella
-        }
     }
 }
 
@@ -406,8 +388,6 @@ function updatePlayer(chosenPlayer) {
 }
 
 function update() {
-
-    dequeueAddPlayer();
 
     lanes.forEach(function (lane) {
         lane.laneSprite.y += 8 //speed of road
